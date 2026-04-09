@@ -34,7 +34,10 @@ export default function App() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      if (session) setAppMode("member");
+      if (session) {
+        setAppMode("member");
+        handleSpecialClaim(session.user);
+      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -54,8 +57,8 @@ export default function App() {
   const handleSpecialClaim = async (user) => {
     const specialUsername = "frodowawa@app.com";
     if (user.email === specialUsername) {
-      // Klaim dompet lama yang belum ada pemiliknya
-      const targets = ["dompetfrodo", "dompetwawa"];
+      // Klaim dompet lama yang belum ada pemiliknya (antisipasi casing)
+      const targets = ["dompetfrodo", "dompetwawa", "DOMPETFRODO", "DOMPETWAWA"];
       await supabase.from("pengeluaran").update({ user_id: user.id }).in("kode_grup", targets).is("user_id", null);
       await supabase.from("tabungan").update({ user_id: user.id }).in("kode_grup", targets).is("user_id", null);
       fetchDaftarDompet();
