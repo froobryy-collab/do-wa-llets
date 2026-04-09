@@ -16,7 +16,7 @@ const AuthView = ({ setSession, onBack }) => {
     setMessage('');
 
     // Format username ke email internal secara otomatis
-    const internalEmail = `${username.toLowerCase().trim()}@dowallets.internal`;
+    const internalEmail = `${username.toLowerCase().trim()}@app.com`;
 
     try {
       if (isRegister) {

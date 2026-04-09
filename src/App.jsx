@@ -52,7 +52,7 @@ export default function App() {
 
   // FITUR KLAIM SPESIAL FOR frodowawa
   const handleSpecialClaim = async (user) => {
-    const specialUsername = "frodowawa@dowallets.internal";
+    const specialUsername = "frodowawa@app.com";
     if (user.email === specialUsername) {
       // Klaim dompet lama yang belum ada pemiliknya
       const targets = ["dompetfrodo", "dompetwawa"];
