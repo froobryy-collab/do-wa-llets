@@ -87,7 +87,7 @@ export default function App() {
     nominal: "",
     tanggal: new Date().toISOString().slice(0, 10),
     jenis: "pengeluaran",
-    kategori: "lainnya"
+    kategori: ""
   });
 
 
@@ -350,7 +350,7 @@ export default function App() {
   const handleCancelEdit = () => {
     setIsEditing(false);
     setCurrentId(null);
-    setForm({ keterangan: "", nominal: "", tanggal: new Date().toISOString().slice(0, 10), jenis: "pengeluaran", kategori: "lainnya" });
+    setForm({ keterangan: "", nominal: "", tanggal: new Date().toISOString().slice(0, 10), jenis: "pengeluaran", kategori: "" });
   };
 
   const handleDeleteTransaction = async (id) => {
@@ -383,7 +383,7 @@ export default function App() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.keterangan || !form.nominal) return alert("Isi semua data dulu ya!");
+    if (!form.keterangan || !form.nominal || !form.kategori) return alert("Isi semua data termasuk kategori dulu ya!");
     setLoading(true);
 
     if (isEditing) {
@@ -403,7 +403,7 @@ export default function App() {
       if (error) {
         alert("Gagal Simpan: " + error.message);
       } else {
-        setForm({ ...form, keterangan: "", nominal: "", jenis: "pengeluaran", kategori: "lainnya" });
+        setForm({ ...form, keterangan: "", nominal: "", jenis: "pengeluaran", kategori: "" });
       }
     }
 

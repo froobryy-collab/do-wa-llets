@@ -19,6 +19,7 @@ const TransactionForm = ({
             onChange={(e) => setForm({ ...form, kategori: e.target.value })}
             style={styles.input}
           >
+            <option value="" disabled>--- Pilih Kategori ---</option>
             <option value="makan-minum">🍴 Makan & Minum</option>
             <option value="gaya hidup">🕶️ Gaya Hidup</option>
             <option value="transportasi">🚗 Transportasi</option>
