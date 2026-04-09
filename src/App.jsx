@@ -144,6 +144,7 @@ export default function App() {
     kategori: ""
   });
 
+  const [printData, setPrintData] = useState(null);
 
   const [filterCetak, setFilterCetak] = useState("semua");
   const [pilihanTgl, setPilihanTgl] = useState(new Date().toISOString().slice(0, 10));
@@ -571,73 +572,13 @@ export default function App() {
     const tlnPengeluaran = dataDisaring.filter(p => p.jenis === "pengeluaran").reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
     const tlnSaved = dataDisaring.filter(p => p.jenis === "tarik_tabungan").reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
 
-    const cetakWindow = window.open("", "_blank");
-
-
-    cetakWindow.document.write(`
-      <html>
-        <head>
-          <title>Laporan Arus Kas - ${kodeDompet}</title>
-          <style>
-            body { font-family: sans-serif; padding: 20px; }
-            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-            th { background-color: #f4f4f4; }
-            .header { text-align: center; margin-bottom: 30px; }
-          </style>
-        </head>
-        <body>
-          <div class="header">
-            <h2>Laporan Arus Kas: ${kodeDompet.toUpperCase()}</h2>
-            <p>Periode laporan: <b>${labelPeriode}</b> (Dicetak pada: ${new Date().toISOString().slice(0, 10)})</p>
-
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>Tanggal</th>
-                <th>Kategori</th>
-                <th>Keterangan</th>
-                <th>Nominal</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${dataDisaring.map(item => `
-                <tr>
-                  <td>${item.tanggal}</td>
-                  <td>${item.kategori || "lainnya"}</td>
-                  <td>${item.keterangan}</td>
-                  <td>Rp ${parseFloat(item.nominal).toLocaleString("id-ID")}</td>
-                </tr>
-
-              `).join("")}
-            </tbody>
-                        <tfoot style="background-color: #f8fafc; font-weight: bold;">
-              <tr>
-                <td colspan="3" style="text-align: right; color: #10B981;">TOTAL PEMASUKAN (+):</td>
-                <td style="color: #10B981;">Rp ${tlnPemasukan.toLocaleString("id-ID")}</td>
-              </tr>
-              <tr>
-                <td colspan="3" style="text-align: right; color: #EF4444;">TOTAL PENGELUARAN (-):</td>
-                <td style="color: #EF4444;">Rp ${tlnPengeluaran.toLocaleString("id-ID")}</td>
-              </tr>
-              <tr>
-                <td colspan="3" style="text-align: right; color: #3B82F6;">TOTAL TABUNGAN (🔒):</td>
-                <td style="color: #3B82F6;">Rp ${tlnSaved.toLocaleString("id-ID")}</td>
-              </tr>
-              <tr style="background-color: #f1f5f9; font-size: 1.1em;">
-                <td colspan="3" style="text-align: right;">SALDO AKHIR PERIODE:</td>
-                <td>Rp ${(tlnPemasukan - tlnPengeluaran - tlnSaved).toLocaleString("id-ID")}</td>
-              </tr>
-            </tfoot>
-
-          </table>
-          <script>window.print();</script>
-
-        </body>
-      </html>
-    `);
-    cetakWindow.document.close();
+    setPrintData({
+      dataDisaring,
+      labelPeriode,
+      tlnPemasukan,
+      tlnPengeluaran,
+      tlnSaved
+    });
   };
 
   const totalPemasukanAktif = pengeluaran
@@ -651,6 +592,60 @@ export default function App() {
 
   // --- RENDERING VIEWS (STATE MACHINE) ---
   
+  // 0. PRINT VIEW
+  if (printData) {
+    return (
+      <div style={{ backgroundColor: '#ffffff', color: '#000000', minHeight: '100vh', padding: '20px', fontFamily: 'sans-serif' }}>
+        <div className="no-print" style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
+          <button onClick={() => setPrintData(null)} style={{ padding: '12px 20px', background: colors.blue, color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>⬅ Batal & Kembali</button>
+          <button onClick={() => { setTimeout(() => window.print(), 300) }} style={{ padding: '12px 20px', background: colors.success, color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>🖨️ Lanjutkan Cetak PDF</button>
+        </div>
+        <div style={{ textAlign: 'center', marginBottom: '30px' }}>
+          <h2 style={{ color: '#000' }}>Laporan Arus Kas: {kodeDompet.toUpperCase()}</h2>
+          <p>Periode laporan: <b>{printData.labelPeriode}</b><br/>Dicetak pada: {new Date().toISOString().slice(0, 10)}</p>
+        </div>
+        <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #ddd' }}>
+            <thead>
+              <tr style={{ background: '#f4f4f4' }}>
+                <th style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'left', color: '#000' }}>Tanggal</th>
+                <th style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'left', color: '#000' }}>Kategori</th>
+                <th style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'left', color: '#000' }}>Keterangan</th>
+                <th style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'left', color: '#000' }}>Nominal</th>
+              </tr>
+            </thead>
+            <tbody>
+              {printData.dataDisaring.map((item, idx) => (
+                <tr key={idx}>
+                  <td style={{ border: '1px solid #ddd', padding: '10px', color: '#000' }}>{item.tanggal}</td>
+                  <td style={{ border: '1px solid #ddd', padding: '10px', color: '#000', textTransform: 'capitalize' }}>{item.kategori || "Lainnya"}</td>
+                  <td style={{ border: '1px solid #ddd', padding: '10px', color: '#000' }}>{item.keterangan}</td>
+                  <td style={{ border: '1px solid #ddd', padding: '10px', color: '#000' }}>Rp {parseFloat(item.nominal).toLocaleString("id-ID")}</td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot style={{ background: '#f8fafc', fontWeight: 'bold' }}>
+              <tr>
+                <td colSpan="3" style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'right', color: '#10B981' }}>TOTAL PEMASUKAN (+):</td>
+                <td style={{ border: '1px solid #ddd', padding: '10px', color: '#10B981' }}>Rp {printData.tlnPemasukan.toLocaleString("id-ID")}</td>
+              </tr>
+              <tr>
+                <td colSpan="3" style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'right', color: '#EF4444' }}>TOTAL PENGELUARAN (-):</td>
+                <td style={{ border: '1px solid #ddd', padding: '10px', color: '#EF4444' }}>Rp {printData.tlnPengeluaran.toLocaleString("id-ID")}</td>
+              </tr>
+              <tr>
+                <td colSpan="3" style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'right', color: '#3B82F6' }}>TOTAL TABUNGAN (🔒):</td>
+                <td style={{ border: '1px solid #ddd', padding: '10px', color: '#3B82F6' }}>Rp {printData.tlnSaved.toLocaleString("id-ID")}</td>
+              </tr>
+              <tr style={{ background: '#f1f5f9', fontSize: '1.1em' }}>
+                <td colSpan="3" style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'right', color: '#000' }}>SALDO AKHIR PERIODE:</td>
+                <td style={{ border: '1px solid #ddd', padding: '10px', color: '#000' }}>Rp {(printData.tlnPemasukan - printData.tlnPengeluaran - printData.tlnSaved).toLocaleString("id-ID")}</td>
+              </tr>
+            </tfoot>
+        </table>
+      </div>
+    );
+  }
+
   // 1. WELCOME SCREEN
   if (appMode === "welcome" && !session) {
     return <WelcomeView onChooseGuest={onChooseGuest} onChooseLogin={onChooseLogin} />;
