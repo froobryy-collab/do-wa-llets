@@ -17,18 +17,7 @@ import WalletHeader from "./components/WalletHeader";
 import WalletDashboard from "./components/WalletDashboard";
 import ReportFilters from "./components/ReportFilters";
 import AuthView from "./components/AuthView";
-// Native Capacitor Plugins (Imported dynamically to avoid build errors on web)
-let CapApp = null;
-let StatusBar = null;
-let Style = null;
 
-if (typeof window !== 'undefined') {
-  import('@capacitor/app').then(m => CapApp = m.App);
-  import('@capacitor/status-bar').then(m => {
-    StatusBar = m.StatusBar;
-    Style = m.Style;
-  });
-}
 
 // 🎨 PALET WARNA BRANKAS PUSAT (Sekarang Dinamis)
 
@@ -78,55 +67,7 @@ export default function App() {
   const onChooseGuest = () => setAppMode("guest");
   const onChooseLogin = () => setAppMode("auth");
 
-  // --- NATIVE MOBILE OPTIMIZATION ---
 
-  // 1. Penanganan Tombol Back Hardware
-  useEffect(() => {
-    if (!CapApp) return;
-
-    const backListener = CapApp.addListener('backButton', ({ canGoBack }) => {
-      if (isHistory) {
-        setIsHistory(false);
-      } else if (isAnalyzing) {
-        setIsAnalyzing(false);
-      } else if (isJoined) {
-        setIsJoined(false);
-      } else if (appMode === "auth") {
-        setAppMode("welcome");
-      } else if (appMode === "guest" || appMode === "member") {
-        // Jika di Lobby, tanyakan konfirmasi keluar
-        if (window.confirm("Keluar dari aplikasi?")) {
-          CapApp.exitApp();
-        }
-      }
-    });
-
-    return () => {
-      backListener.then(l => l.remove());
-    };
-  }, [isJoined, isHistory, isAnalyzing, appMode]);
-
-  // 2. Sinkronisasi Warna Status Bar (Akses Native)
-  useEffect(() => {
-    if (!StatusBar || !Style) return;
-    
-    const updateStatusBar = async () => {
-      try {
-        if (isDarkMode) {
-          await StatusBar.setStyle({ style: Style.Dark });
-          await StatusBar.setBackgroundColor({ color: '#0f172a' }); // Menyatu dengan header dark
-        } else {
-          await StatusBar.setStyle({ style: Style.Light });
-          await StatusBar.setBackgroundColor({ color: '#ffffff' });
-        }
-      } catch (e) {
-        // Abaikan jika bukan di environment mobile
-      }
-    };
-    updateStatusBar();
-  }, [isDarkMode]);
-
-  // LOGIKA DARK MODE
   const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem("theme") === "dark");
 
   useEffect(() => {
