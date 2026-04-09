@@ -17,12 +17,18 @@ import WalletHeader from "./components/WalletHeader";
 import WalletDashboard from "./components/WalletDashboard";
 import ReportFilters from "./components/ReportFilters";
 import AuthView from "./components/AuthView";
-import { LogOut } from 'lucide-react';
-import WelcomeView from "./components/WelcomeView";
+// Native Capacitor Plugins (Imported dynamically to avoid build errors on web)
+let CapApp = null;
+let StatusBar = null;
+let Style = null;
 
-// Native Capacitor Plugins
-import { App as CapApp } from '@capacitor/app';
-import { StatusBar, Style } from '@capacitor/status-bar';
+if (typeof window !== 'undefined') {
+  import('@capacitor/app').then(m => CapApp = m.App);
+  import('@capacitor/status-bar').then(m => {
+    StatusBar = m.StatusBar;
+    Style = m.Style;
+  });
+}
 
 // 🎨 PALET WARNA BRANKAS PUSAT (Sekarang Dinamis)
 
@@ -76,6 +82,8 @@ export default function App() {
 
   // 1. Penanganan Tombol Back Hardware
   useEffect(() => {
+    if (!CapApp) return;
+
     const backListener = CapApp.addListener('backButton', ({ canGoBack }) => {
       if (isHistory) {
         setIsHistory(false);
@@ -100,6 +108,8 @@ export default function App() {
 
   // 2. Sinkronisasi Warna Status Bar (Akses Native)
   useEffect(() => {
+    if (!StatusBar || !Style) return;
+    
     const updateStatusBar = async () => {
       try {
         if (isDarkMode) {
