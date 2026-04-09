@@ -15,7 +15,7 @@ const WalletHeader = ({
 }) => {
   return (
     <header style={{ ...styles.whiteCard, marginBottom: '20px', padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }} className="mobile-stack">
         <div>
           <h1 style={{ ...styles.brankasTitle, fontSize: '1.5rem', marginBottom: '0' }}>💸 Catatan Keuangan</h1>
           <p style={{ color: colors.textMuted, fontSize: '0.9rem', marginTop: '5px' }}>

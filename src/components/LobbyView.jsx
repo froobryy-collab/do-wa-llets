@@ -17,21 +17,15 @@ const LobbyView = ({
     <div style={styles.bodyWrapper}>
       <div style={styles.fullContainer} className="mobile-p-10">
 
-        {/* HEADER BRANKAS PUSAT DENGAN TOMBOL DI POJOK */}
-        <div style={{ position: 'relative', marginBottom: '35px' }}>
-          {/* Tombol Pojok Kanan Atas (Hanya muncul jika Guest atau if needed) */}
-          <div style={{ 
-            position: 'absolute', 
-            top: '0', 
-            right: '0', 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: '10px' 
-          }} className="mobile-header-actions">
+        {/* HEADER BRANKAS PUSAT */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '35px' }}>
+          
+          {/* Tombol Pojok Kanan Diubah menjadi sejajar atas */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '10px' }}>
             {appMode === 'guest' && (
               <button 
                 onClick={onChooseLogin}
-                style={{ ...styles.btnSecondary, background: colors.blue, color: 'white', border: 'none' }}
+                style={{ ...styles.btnSecondary, background: colors.blue, color: 'white', border: 'none', padding: '8px 16px', fontSize: '0.85rem' }}
               >
                 Login Member
               </button>
@@ -40,7 +34,7 @@ const LobbyView = ({
           </div>
 
           <div style={styles.brankasHeader}>
-            <h1 style={styles.brankasTitle}>Do-Wa-llets</h1>
+            <h1 style={{...styles.brankasTitle, margin: '0 0 5px 0'}}>Do-Wa-llets</h1>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
               <span style={styles.globalRingkasan}>Money for Future</span>
               {appMode === 'guest' && (
@@ -48,7 +42,7 @@ const LobbyView = ({
                   background: 'rgba(245, 158, 11, 0.15)', 
                   color: colors.warning, 
                   fontSize: '0.65rem', 
-                  padding: '2px 8px', 
+                  padding: '3px 8px', 
                   borderRadius: '10px', 
                   fontWeight: '700',
                   letterSpacing: '0.05em'

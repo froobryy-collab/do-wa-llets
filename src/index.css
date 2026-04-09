@@ -127,21 +127,23 @@ code {
   }
   
   .mobile-p-10 {
-    padding: 10px !important;
+    padding: 10px 15px !important;
   }
 
   .mobile-stack {
     flex-direction: column !important;
     align-items: stretch !important;
-    gap: 15px !important;
+    gap: 12px !important;
   }
 
   .mobile-grid-1 {
     grid-template-columns: 1fr !important;
+    gap: 12px !important;
   }
 
   .mobile-grid-2 {
     grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
   }
 
   .mobile-hide {
@@ -151,6 +153,7 @@ code {
   .mobile-full-width {
     width: 100% !important;
     min-width: 0 !important;
+    justify-content: center !important;
   }
 
   .mobile-text-center {
@@ -158,15 +161,20 @@ code {
   }
 
   h1 {
-    font-size: 2rem !important;
+    font-size: 1.8rem !important;
+    letter-spacing: -1px;
   }
 
   h2 {
-    font-size: 1.5rem !important;
+    font-size: 1.3rem !important;
   }
 
   .card-number {
-    font-size: 1.4rem !important;
+    font-size: 1.5rem !important;
+  }
+  
+  input, button {
+    font-size: 1rem !important; /* Mencegah auto-zoom di iOS safari saat fokus */
   }
 }
 
