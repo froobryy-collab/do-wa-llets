@@ -9,7 +9,7 @@ const WalletDashboard = ({
   sisaUangAktif
 }) => {
   return (
-    <div style={{ ...styles.brankasGrid, marginBottom: '20px' }}>
+    <div style={{ ...styles.brankasGrid, marginBottom: '20px' }} className="mobile-grid-1">
       <div style={styles.whiteCard}>
         <p style={styles.cardLabel}>Atur Modal Awal</p>
         <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
@@ -39,14 +39,14 @@ const WalletDashboard = ({
           color: sisaUangAktif >= 0 ? colors.success : colors.danger,
           fontSize: '1.6rem',
           fontWeight: '800'
-        }}>
+        }} className="card-number">
           Rp {sisaUangAktif.toLocaleString("id-ID")}
         </h2>
       </div>
 
       <div style={{ ...styles.whiteCard, background: "#EFF6FF" }}>
         <p style={{ ...styles.cardLabel, color: colors.blue }}>Total Tabungan Terkunci</p>
-        <h2 style={{ margin: "5px 0 0 0", color: colors.blue, fontSize: '1.6rem', fontWeight: '800' }}>
+        <h2 style={{ margin: "5px 0 0 0", color: colors.blue, fontSize: '1.6rem', fontWeight: '800' }} className="card-number">
           Rp {(keuangan.tabungan_bulan_ini + keuangan.total_tabungan_semua).toLocaleString("id-ID")}
         </h2>
         <p style={{ margin: "4px 0 0 0", fontSize: '0.75rem', color: colors.textMuted }}>Saved bulan lalu</p>

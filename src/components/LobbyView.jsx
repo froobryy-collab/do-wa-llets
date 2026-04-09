@@ -13,7 +13,7 @@ const LobbyView = ({
 }) => {
   return (
     <div style={styles.bodyWrapper}>
-      <div style={styles.fullContainer}>
+      <div style={styles.fullContainer} className="mobile-p-10">
 
         {/* HEADER BRANKAS PUSAT */}
         <div style={styles.brankasHeader}>
@@ -23,7 +23,7 @@ const LobbyView = ({
         </div>
 
         {/* 4 CARDS AGREGASI */}
-        <div style={styles.brankasGrid}>
+        <div style={styles.brankasGrid} className="mobile-grid-2">
           <div style={styles.whiteCard}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
@@ -34,7 +34,7 @@ const LobbyView = ({
                 <span style={{ color: colors.success }}>💼</span>
               </div>
             </div>
-            <h2 style={{ ...styles.cardNumber, color: colors.success }}>
+            <h2 style={{ ...styles.cardNumber, color: colors.success }} className="card-number">
               Rp {totals.modalTerdaftar.toLocaleString("id-ID")}
             </h2>
           </div>
@@ -49,7 +49,7 @@ const LobbyView = ({
                 <span style={{ color: colors.success }}>↗</span>
               </div>
             </div>
-            <h2 style={{ ...styles.cardNumber, color: colors.success }}>
+            <h2 style={{ ...styles.cardNumber, color: colors.success }} className="card-number">
               + Rp {totals.totalPemasukan.toLocaleString("id-ID")}
             </h2>
           </div>
@@ -61,7 +61,7 @@ const LobbyView = ({
                 <span style={{ color: colors.danger }}>↘</span>
               </div>
             </div>
-            <h2 style={{ ...styles.cardNumber, color: colors.danger }}>
+            <h2 style={{ ...styles.cardNumber, color: colors.danger }} className="card-number">
               - Rp {totals.totalPengeluaran.toLocaleString("id-ID")}
             </h2>
           </div>
@@ -73,7 +73,7 @@ const LobbyView = ({
                 <span style={{ color: colors.blue }}>🔒</span>
               </div>
             </div>
-            <h2 style={{ ...styles.cardNumber, color: colors.blue }}>
+            <h2 style={{ ...styles.cardNumber, color: colors.blue }} className="card-number">
               Rp {totals.tabunganTerkunci.toLocaleString("id-ID")}
             </h2>
           </div>
@@ -81,7 +81,7 @@ const LobbyView = ({
 
         {/* BAR AKSES DOMPET DESAIN BARU */}
         <div style={{ ...styles.whiteCard, marginBottom: '30px', padding: '15px 25px' }}>
-          <form onSubmit={handleJoin} style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+          <form onSubmit={handleJoin} style={{ display: 'flex', gap: '20px', alignItems: 'center' }} className="mobile-stack">
             <p style={{ fontWeight: '800', fontSize: '1rem', whiteSpace: 'nowrap', margin: 0 }}>Akses Dompet:</p>
             <input
               type="text"
@@ -99,7 +99,7 @@ const LobbyView = ({
                 outline: 'none'
               }}
             />
-            <button type="submit" style={{ ...styles.button, padding: '12px 30px' }}>Buka Brankas</button>
+            <button type="submit" style={{ ...styles.button, padding: '12px 30px' }} className="mobile-full-width">Buka Brankas</button>
           </form>
           <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: `1px solid ${colors.border}`, textAlign: 'center' }}>
             <button

@@ -16,7 +16,7 @@ const TransactionTable = ({
         <table style={styles.table}>
           <thead>
             <tr style={styles.thRow}>
-              <th style={styles.th}>Tanggal</th>
+              <th style={styles.th} className="mobile-hide">Tanggal</th>
               <th style={styles.th}>Kategori & Keterangan</th>
               <th style={{ ...styles.th, textAlign: 'right' }}>Nominal</th>
               <th style={{ ...styles.th, textAlign: 'center' }}>Aksi</th>
@@ -36,9 +36,9 @@ const TransactionTable = ({
               const isLastRowInDate = index === pengeluaran.length - 1 || pengeluaran[index + 1].tanggal !== item.tanggal;
 
               return (
-                <div key={index} style={{ display: 'contents' }}>
+                <React.Fragment key={index}>
                   <tr style={styles.tr}>
-                    <td style={styles.td}>{item.tanggal}</td>
+                    <td style={styles.td} className="mobile-hide">{item.tanggal}</td>
                     <td style={styles.td}>
                       <div style={{ fontSize: '0.7rem', color: colors.textMuted, textTransform: 'uppercase', fontWeight: 'bold' }}>
                         {item.kategori || 'lainnya'}
@@ -80,7 +80,7 @@ const TransactionTable = ({
                       </td>
                     </tr>
                   )}
-                </div>
+                </React.Fragment>
               );
             })}
 

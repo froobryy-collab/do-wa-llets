@@ -531,7 +531,7 @@ export default function App() {
   // TAMPILAN 2: HALAMAN PENCATATAN DOMPET (Sama seperti sebelumnya, diselaraskan palet warnanya)
   return (
     <div style={styles.bodyWrapper}>
-      <div style={styles.fullContainer}>
+      <div style={styles.fullContainer} className="mobile-p-10">
         <WalletHeader
           isAnalyzing={isAnalyzing}
           setIsAnalyzing={setIsAnalyzing}

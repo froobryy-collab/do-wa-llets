@@ -20,7 +20,7 @@ const HistoryView = ({ setIsHistory, riwayatData, totals }) => {
               <thead>
                 <tr style={styles.thRow}>
                   <th style={styles.th}>Bulan</th>
-                  <th style={styles.th}>Modal Aktif</th>
+                  <th style={styles.th} className="mobile-hide">Modal Aktif</th>
                   <th style={{ ...styles.th, color: colors.success }}>Pemasukan</th>
                   <th style={{ ...styles.th, color: colors.danger }}>Pengeluaran</th>
                   <th style={{ ...styles.th, color: colors.blue }}>Tabungan</th>
@@ -32,7 +32,7 @@ const HistoryView = ({ setIsHistory, riwayatData, totals }) => {
                     <td style={{ ...styles.td, fontWeight: '700' }}>
                       {new Date(row.bulan + "-01").toLocaleString('id-ID', { month: 'long', year: 'numeric' })}
                     </td>
-                    <td style={styles.td}>Rp {totals.modalTerdaftar.toLocaleString("id-ID")}</td>
+                    <td style={styles.td} className="mobile-hide">Rp {totals.modalTerdaftar.toLocaleString("id-ID")}</td>
                     <td style={{ ...styles.td, color: colors.success }}>+ Rp {row.pemasukan.toLocaleString("id-ID")}</td>
                     <td style={{ ...styles.td, color: colors.danger }}>- Rp {row.pengeluaran.toLocaleString("id-ID")}</td>
                     <td style={{ ...styles.td, color: colors.blue }}>🔒 Rp {row.tabungan.toLocaleString("id-ID")}</td>

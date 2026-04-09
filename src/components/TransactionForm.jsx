@@ -11,8 +11,8 @@ const TransactionForm = ({
 }) => {
   return (
     <div style={{ ...styles.whiteCard, padding: '20px', marginBottom: '20px' }}>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-        <div style={styles.inputGroup}>
+      <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', alignItems: 'flex-end' }} className="mobile-stack">
+        <div style={styles.inputGroup} className="mobile-full-width">
           <label style={styles.label}>Kategori</label>
           <select
             value={form.kategori}
@@ -31,7 +31,7 @@ const TransactionForm = ({
           </select>
         </div>
 
-        <div style={styles.inputGroup}>
+        <div style={styles.inputGroup} className="mobile-full-width">
           <label style={styles.label}>Tanggal</label>
           <input
             type="date"
@@ -41,7 +41,7 @@ const TransactionForm = ({
           />
         </div>
 
-        <div style={styles.inputGroup}>
+        <div style={styles.inputGroup} className="mobile-full-width">
           <label style={styles.label}>Tipe Arus</label>
           <select
             value={form.jenis}
@@ -54,7 +54,7 @@ const TransactionForm = ({
           </select>
         </div>
 
-        <div style={styles.inputGroup}>
+        <div style={styles.inputGroup} className="mobile-full-width">
           <label style={styles.label}>Keterangan</label>
           <input
             type="text"
@@ -65,7 +65,7 @@ const TransactionForm = ({
           />
         </div>
 
-        <div style={styles.inputGroup}>
+        <div style={styles.inputGroup} className="mobile-full-width">
           <label style={styles.label}>Nominal (Rp)</label>
           <input
             type="number"
@@ -76,7 +76,7 @@ const TransactionForm = ({
           />
         </div>
 
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-end' }}>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-end' }} className="mobile-full-width">
           <button
             type="submit"
             disabled={loading}
@@ -84,8 +84,9 @@ const TransactionForm = ({
               ...styles.button,
               background: isEditing ? colors.warning : colors.success,
               height: '42px',
-              width: '100px'
+              width: isEditing ? 'auto' : '100px'
             }}
+            className="mobile-full-width"
           >
             {loading ? "..." : isEditing ? "Update" : "Simpan"}
           </button>
@@ -94,6 +95,7 @@ const TransactionForm = ({
               type="button"
               onClick={handleCancelEdit}
               style={{ ...styles.btnSecondary, height: '42px' }}
+              className="mobile-full-width"
             >
               Batal
             </button>
