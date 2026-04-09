@@ -16,6 +16,9 @@ import TransactionForm from "./components/TransactionForm";
 import WalletHeader from "./components/WalletHeader";
 import WalletDashboard from "./components/WalletDashboard";
 import ReportFilters from "./components/ReportFilters";
+import AuthView from "./components/AuthView";
+import { LogOut } from 'lucide-react';
+import WelcomeView from "./components/WelcomeView";
 
 // 🎨 PALET WARNA BRANKAS PUSAT (Sekarang Dinamis)
 
@@ -23,6 +26,44 @@ import ReportFilters from "./components/ReportFilters";
 
 export default function App() {
   document.title = "Do-Wa-llets";
+
+  // Auth & Navigation State
+  const [session, setSession] = useState(null);
+  const [appMode, setAppMode] = useState("welcome"); // welcome | guest | member
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session) setAppMode("member");
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session) {
+        setAppMode("member");
+        handleSpecialClaim(session.user);
+      } else {
+        setAppMode("welcome");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // FITUR KLAIM SPESIAL FOR frodowawa
+  const handleSpecialClaim = async (user) => {
+    const specialUsername = "frodowawa@dowallets.internal";
+    if (user.email === specialUsername) {
+      // Klaim dompet lama yang belum ada pemiliknya
+      const targets = ["dompetfrodo", "dompetwawa"];
+      await supabase.from("pengeluaran").update({ user_id: user.id }).in("kode_grup", targets).is("user_id", null);
+      await supabase.from("tabungan").update({ user_id: user.id }).in("kode_grup", targets).is("user_id", null);
+      fetchDaftarDompet();
+    }
+  };
+
+  const onChooseGuest = () => setAppMode("guest");
+  const onChooseLogin = () => setAppMode("auth");
 
   // LOGIKA DARK MODE
   const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem("theme") === "dark");
@@ -38,13 +79,24 @@ export default function App() {
   }, [isDarkMode]);
 
   const toggleThemeButton = (
-    <button
-      onClick={() => setIsDarkMode(!isDarkMode)}
-      style={{ ...styles.btnSecondary, display: 'flex', alignItems: 'center', gap: '8px', padding: '10px' }}
-      title="Ganti Mode"
-    >
-      {isDarkMode ? <Sun size={18} color={colors.warning} /> : <Moon size={18} color={colors.blue} />}
-    </button>
+    <div style={{ display: 'flex', gap: '8px' }}>
+      <button
+        onClick={() => setIsDarkMode(!isDarkMode)}
+        style={{ ...styles.btnSecondary, display: 'flex', alignItems: 'center', gap: '8px', padding: '10px' }}
+        title="Ganti Mode"
+      >
+        {isDarkMode ? <Sun size={18} color={colors.warning} /> : <Moon size={18} color={colors.blue} />}
+      </button>
+      {appMode === 'member' && session && (
+        <button
+          onClick={() => supabase.auth.signOut()}
+          style={{ ...styles.btnSecondary, display: 'flex', alignItems: 'center', gap: '8px', padding: '10px' }}
+          title="Keluar"
+        >
+          <LogOut size={18} color={colors.danger} />
+        </button>
+      )}
+    </div>
   );
 
 
@@ -128,8 +180,22 @@ export default function App() {
   // --- LOGIKA ASLI ---
 
   const fetchDaftarDompet = async () => {
-    const { data: dataPengeluaran } = await supabase.from("pengeluaran").select("kode_grup, nominal, jenis, tanggal");
-    const { data: dataTabungan } = await supabase.from("tabungan").select("*");
+    if (appMode === "welcome" || appMode === "auth") return;
+    
+    // Logika Filter Hybrid
+    let queryPengeluaran = supabase.from("pengeluaran").select("kode_grup, nominal, jenis, tanggal");
+    let queryTabungan = supabase.from("tabungan").select("*");
+
+    if (appMode === "member" && session) {
+      queryPengeluaran = queryPengeluaran.eq("user_id", session.user.id);
+      queryTabungan = queryTabungan.eq("user_id", session.user.id);
+    } else {
+      queryPengeluaran = queryPengeluaran.is("user_id", null);
+      queryTabungan = queryTabungan.is("user_id", null);
+    }
+
+    const { data: dataPengeluaran } = await queryPengeluaran;
+    const { data: dataTabungan } = await queryTabungan;
 
     if (dataPengeluaran) {
       const bulanSekarang = new Date().toISOString().slice(0, 7);
@@ -198,11 +264,15 @@ export default function App() {
 
   const fetchKeuanganDompet = async () => {
     if (!kodeDompet) return;
-    const { data, error } = await supabase
-      .from("tabungan")
-      .select("*")
-      .eq("kode_grup", kodeDompet.toLowerCase())
-      .single();
+    let query = supabase.from("tabungan").select("*").eq("kode_grup", kodeDompet.toLowerCase());
+    
+    if (appMode === "member" && session) {
+      query = query.eq("user_id", session.user.id);
+    } else {
+      query = query.is("user_id", null);
+    }
+
+    const { data, error } = await query.single();
 
     if (!error && data) {
       setKeuangan({
@@ -220,17 +290,24 @@ export default function App() {
     if (!kodeDompet) return;
     const bulanSekarang = new Date().toISOString().slice(0, 7);
 
-    const { data: dataKeuangan } = await supabase
-      .from("tabungan")
-      .select("*")
-      .eq("kode_grup", kodeDompet.toLowerCase())
-      .single();
+    let queryBulan = supabase.from("tabungan").select("*").eq("kode_grup", kodeDompet.toLowerCase());
+    if (appMode === "member" && session) {
+      queryBulan = queryBulan.eq("user_id", session.user.id);
+    } else {
+      queryBulan = queryBulan.is("user_id", null);
+    }
+
+    const { data: dataKeuangan } = await queryBulan.single();
 
     if (dataKeuangan && dataKeuangan.bulan_aktif && dataKeuangan.bulan_aktif !== bulanSekarang) {
-      const { data: semuaTransaksi } = await supabase
-        .from("pengeluaran")
-        .select("*")
-        .eq("kode_grup", kodeDompet.toLowerCase());
+      let queryTrans = supabase.from("pengeluaran").select("*").eq("kode_grup", kodeDompet.toLowerCase());
+      if (appMode === "member" && session) {
+        queryTrans = queryTrans.eq("user_id", session.user.id);
+      } else {
+        queryTrans = queryTrans.is("user_id", null);
+      }
+      
+      const { data: semuaTransaksi } = await queryTrans;
 
       // Sekarang kita hanya mengambil transaksi yang tipenya "tarik_tabungan"
       const totalYangDiSaved = semuaTransaksi
@@ -265,21 +342,31 @@ export default function App() {
     const bulanSekarang = new Date().toISOString().slice(0, 7);
     setLoading(true);
 
-    const { data: adaData } = await supabase
-      .from("tabungan")
-      .select("*")
-      .eq("kode_grup", kodeDompet.toLowerCase())
-      .single();
+    let queryAda = supabase.from("tabungan").select("*").eq("kode_grup", kodeDompet.toLowerCase());
+    if (appMode === "member" && session) {
+      queryAda = queryAda.eq("user_id", session.user.id);
+    } else {
+      queryAda = queryAda.is("user_id", null);
+    }
+
+    const { data: adaData } = await queryAda.single();
 
     if (adaData) {
-      await supabase
-        .from("tabungan")
-        .update({ modal_awal: parseFloat(inputModal), bulan_aktif: bulanSekarang })
-        .eq("kode_grup", kodeDompet.toLowerCase());
+      let updateQuery = supabase.from("tabungan").update({ modal_awal: parseFloat(inputModal), bulan_aktif: bulanSekarang }).eq("kode_grup", kodeDompet.toLowerCase());
+      if (appMode === "member" && session) {
+        updateQuery = updateQuery.eq("user_id", session.user.id);
+      } else {
+        updateQuery = updateQuery.is("user_id", null);
+      }
+      await updateQuery;
     } else {
-      await supabase
-        .from("tabungan")
-        .insert([{ kode_grup: kodeDompet.toLowerCase(), modal_awal: parseFloat(inputModal), bulan_aktif: bulanSekarang }]);
+      const payload = { 
+        kode_grup: kodeDompet.toLowerCase(), 
+        modal_awal: parseFloat(inputModal), 
+        bulan_aktif: bulanSekarang,
+        user_id: (appMode === "member" && session) ? session.user.id : null
+      };
+      await supabase.from("tabungan").insert([payload]);
     }
 
     setLoading(false);
@@ -291,10 +378,15 @@ export default function App() {
 
   const fetchData = async () => {
     if (!kodeDompet) return;
-    const { data, error } = await supabase
-      .from("pengeluaran")
-      .select("*")
-      .eq("kode_grup", kodeDompet.toLowerCase())
+    let queryFetch = supabase.from("pengeluaran").select("*").eq("kode_grup", kodeDompet.toLowerCase());
+    
+    if (appMode === "member" && session) {
+      queryFetch = queryFetch.eq("user_id", session.user.id);
+    } else {
+      queryFetch = queryFetch.is("user_id", null);
+    }
+
+    const { data, error } = await queryFetch
       // Pertama, urutkan tanggal terbaru di atas
       .order("tanggal", { ascending: false })
       // Kedua, jika tanggal sama, urutkan input terbaru (ID terbesar) di atas
@@ -310,7 +402,11 @@ export default function App() {
 
   };
 
-  useEffect(() => { fetchDaftarDompet(); }, []);
+  useEffect(() => { 
+    if (appMode === "guest" || (appMode === "member" && session)) {
+      fetchDaftarDompet(); 
+    }
+  }, [appMode, session]);
 
   useEffect(() => {
     if (isJoined) {
@@ -331,8 +427,19 @@ export default function App() {
     if (namaBaru && namaBaru.trim() !== "" && namaBaru.toLowerCase() !== kodeDompet.toLowerCase()) {
       const fixNamaBaru = namaBaru.trim().toLowerCase();
       setLoading(true);
-      await supabase.from("pengeluaran").update({ kode_grup: fixNamaBaru }).eq("kode_grup", kodeDompet.toLowerCase());
-      await supabase.from("tabungan").update({ kode_grup: fixNamaBaru }).eq("kode_grup", kodeDompet.toLowerCase());
+      let up1 = supabase.from("pengeluaran").update({ kode_grup: fixNamaBaru }).eq("kode_grup", kodeDompet.toLowerCase());
+      let up2 = supabase.from("tabungan").update({ kode_grup: fixNamaBaru }).eq("kode_grup", kodeDompet.toLowerCase());
+      
+      if (appMode === "member" && session) {
+        up1 = up1.eq("user_id", session.user.id);
+        up2 = up2.eq("user_id", session.user.id);
+      } else {
+        up1 = up1.is("user_id", null);
+        up2 = up2.is("user_id", null);
+      }
+
+      await up1;
+      await up2;
       setLoading(false);
       alert(`Nama dompet berhasil diubah menjadi #${fixNamaBaru}!`);
       setKodeDompet(fixNamaBaru);
@@ -357,7 +464,13 @@ export default function App() {
     const confirmation = window.confirm("Apakah kamu yakin ingin menghapus catatan transaksi ini?");
     if (confirmation) {
       setLoading(true);
-      await supabase.from("pengeluaran").delete().eq("id", id);
+      let queryDel = supabase.from("pengeluaran").delete().eq("id", id);
+      if (appMode === "member" && session) {
+        queryDel = queryDel.eq("user_id", session.user.id);
+      } else {
+        queryDel = queryDel.is("user_id", null);
+      }
+      await queryDel;
       setLoading(false);
       alert("Catatan berhasil dihapus!");
       fetchData();
@@ -369,8 +482,19 @@ export default function App() {
     const confirmation = window.confirm(`Apakah kamu yakin ingin menghapus DOMPET #${kodeDompet.toLowerCase()}?`);
     if (confirmation) {
       setLoading(true);
-      await supabase.from("pengeluaran").delete().eq("kode_grup", kodeDompet.toLowerCase());
-      await supabase.from("tabungan").delete().eq("kode_grup", kodeDompet.toLowerCase());
+      let d1 = supabase.from("pengeluaran").delete().eq("kode_grup", kodeDompet.toLowerCase());
+      let d2 = supabase.from("tabungan").delete().eq("kode_grup", kodeDompet.toLowerCase());
+      
+      if (appMode === "member" && session) {
+        d1 = d1.eq("user_id", session.user.id);
+        d2 = d2.eq("user_id", session.user.id);
+      } else {
+        d1 = d1.is("user_id", null);
+        d2 = d2.is("user_id", null);
+      }
+
+      await d1;
+      await d2;
       setLoading(false);
       alert("Dompet dan Tabungan berhasil dihapus!");
       setPengeluaran([]);
@@ -387,10 +511,18 @@ export default function App() {
     setLoading(true);
 
     if (isEditing) {
-      const { error } = await supabase
+      let queryUp = supabase
         .from("pengeluaran")
         .update({ keterangan: form.keterangan, nominal: parseFloat(form.nominal), tanggal: form.tanggal, jenis: form.jenis, kategori: form.kategori })
         .eq('id', currentId);
+        
+      if (appMode === "member" && session) {
+        queryUp = queryUp.eq("user_id", session.user.id);
+      } else {
+        queryUp = queryUp.is("user_id", null);
+      }
+      
+      const { error } = await queryUp;
 
       if (error) {
         alert("Gagal Update: " + error.message);
@@ -398,7 +530,15 @@ export default function App() {
         handleCancelEdit();
       }
     } else {
-      const { error } = await supabase.from("pengeluaran").insert([{ keterangan: form.keterangan, nominal: parseFloat(form.nominal), tanggal: form.tanggal, kode_grup: kodeDompet.toLowerCase(), jenis: form.jenis, kategori: form.kategori }]);
+      const { error } = await supabase.from("pengeluaran").insert([{ 
+        keterangan: form.keterangan, 
+        nominal: parseFloat(form.nominal), 
+        tanggal: form.tanggal, 
+        kode_grup: kodeDompet.toLowerCase(), 
+        jenis: form.jenis, 
+        kategori: form.kategori,
+        user_id: (appMode === "member" && session) ? session.user.id : null 
+      }]);
 
       if (error) {
         alert("Gagal Simpan: " + error.message);
@@ -507,9 +647,21 @@ export default function App() {
     .reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
   const sisaUangAktif = keuangan.modal_awal + totalPemasukanAktif - totalPengeluaranAktif;
 
-  // --- RENDERING VIEWS ---
+  // --- RENDERING VIEWS (STATE MACHINE) ---
+  
+  // 1. WELCOME SCREEN
+  if (appMode === "welcome" && !session) {
+    return <WelcomeView onChooseGuest={onChooseGuest} onChooseLogin={onChooseLogin} />;
+  }
 
-  // TAMPILAN 0: HALAMAN RIWAYAT
+  // 2. AUTH VIEW (LOGIN SCREEN)
+  if (appMode === "auth" && !session) {
+    return <AuthView setSession={setSession} onBack={() => setAppMode("welcome")} />;
+  }
+
+  // 3. MAIN APP (GUEST OR MEMBER)
+  
+  // TAMPILAN 0.1: HALAMAN RIWAYAT
   if (isHistory) return <HistoryView setIsHistory={setIsHistory} riwayatData={riwayatData} totals={totals} />;
 
   // TAMPILAN 1: BRANKAS PUSAT (LOBBY BARU)
@@ -524,6 +676,8 @@ export default function App() {
         setIsHistory={setIsHistory}
         daftarDompet={daftarDompet}
         setIsJoined={setIsJoined}
+        appMode={appMode}
+        onChooseLogin={onChooseLogin}
       />
     );
   }

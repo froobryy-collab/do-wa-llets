@@ -9,17 +9,53 @@ const LobbyView = ({
   setKodeDompet, 
   setIsHistory, 
   daftarDompet, 
-  setIsJoined 
+  setIsJoined,
+  appMode,
+  onChooseLogin
 }) => {
   return (
     <div style={styles.bodyWrapper}>
       <div style={styles.fullContainer} className="mobile-p-10">
 
-        {/* HEADER BRANKAS PUSAT */}
-        <div style={styles.brankasHeader}>
-          <h1 style={styles.brankasTitle}>Do-Wa-llets</h1>
-          <span style={styles.globalRingkasan}>Money for Future</span>
-          <div style={{ marginTop: '15px' }}>{toggleThemeButton}</div>
+        {/* HEADER BRANKAS PUSAT DENGAN TOMBOL DI POJOK */}
+        <div style={{ position: 'relative', marginBottom: '35px' }}>
+          {/* Tombol Pojok Kanan Atas (Hanya muncul jika Guest atau if needed) */}
+          <div style={{ 
+            position: 'absolute', 
+            top: '0', 
+            right: '0', 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '10px' 
+          }} className="mobile-header-actions">
+            {appMode === 'guest' && (
+              <button 
+                onClick={onChooseLogin}
+                style={{ ...styles.btnSecondary, background: colors.blue, color: 'white', border: 'none' }}
+              >
+                Login Member
+              </button>
+            )}
+            {toggleThemeButton}
+          </div>
+
+          <div style={styles.brankasHeader}>
+            <h1 style={styles.brankasTitle}>Do-Wa-llets</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
+              <span style={styles.globalRingkasan}>Money for Future</span>
+              {appMode === 'guest' && (
+                <span style={{ 
+                  background: 'rgba(245, 158, 11, 0.15)', 
+                  color: colors.warning, 
+                  fontSize: '0.65rem', 
+                  padding: '2px 8px', 
+                  borderRadius: '10px', 
+                  fontWeight: '700',
+                  letterSpacing: '0.05em'
+                }}>MODE TAMU</span>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* 4 CARDS AGREGASI */}
