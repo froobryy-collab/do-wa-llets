@@ -116,7 +116,6 @@ const WelcomeView = ({ onChooseGuest, onChooseLogin }) => {
         </div>
       </div>
     </div>
-    </div>
   );
 };
 

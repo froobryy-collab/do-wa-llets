@@ -205,7 +205,6 @@ const AuthView = ({ setSession, onBack }) => {
           </button>
         </div>
       </div>
-      </div>
     </div>
   );
 };
