@@ -7,14 +7,16 @@ const WelcomeView = ({ onChooseGuest, onChooseLogin }) => {
     <div style={{
       ...styles.bodyWrapper,
       display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
+      flexDirection: 'column',
+      minHeight: '100dvh',
       padding: '20px',
-      background: 'radial-gradient(circle at top right, #1e293b, #0f172a)'
+      background: 'radial-gradient(circle at top right, #1e293b, #0f172a)',
+      overflowY: 'auto'
     }}>
+    <div style={{ margin: 'auto', width: '100%', maxWidth: '480px' }}>
       <div style={{
         ...styles.whiteCard,
-        maxWidth: '480px',
+        maxWidth: '100%',
         width: '100%',
         padding: '50px 40px',
         textAlign: 'center',
@@ -115,6 +117,7 @@ const WelcomeView = ({ onChooseGuest, onChooseLogin }) => {
           </p>
         </div>
       </div>
+    </div>
     </div>
   );
 };

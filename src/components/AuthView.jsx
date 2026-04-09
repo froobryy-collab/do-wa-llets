@@ -49,11 +49,13 @@ const AuthView = ({ setSession, onBack }) => {
     <div style={{
       ...styles.bodyWrapper,
       display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
+      flexDirection: 'column',
+      minHeight: '100dvh',
       padding: '20px',
-      background: 'radial-gradient(circle at top right, #1e293b, #0f172a)'
+      background: 'radial-gradient(circle at top right, #1e293b, #0f172a)',
+      overflowY: 'auto'
     }}>
+      <div style={{ margin: 'auto', width: '100%' }}>
       <div style={{
         ...styles.whiteCard,
         maxWidth: '400px',
@@ -203,6 +205,7 @@ const AuthView = ({ setSession, onBack }) => {
             {isRegister ? 'Login di sini' : 'Daftar sekarang'}
           </button>
         </div>
+      </div>
       </div>
     </div>
   );
