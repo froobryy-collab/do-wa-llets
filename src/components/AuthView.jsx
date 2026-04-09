@@ -102,7 +102,8 @@ const AuthView = ({ setSession, onBack }) => {
                 left: '12px',
                 top: '50%',
                 transform: 'translateY(-50%)',
-                color: colors.textMuted
+                color: colors.textMuted,
+                pointerEvents: 'none'
               }} />
               <input
                 type="text"
@@ -136,7 +137,8 @@ const AuthView = ({ setSession, onBack }) => {
                 left: '12px',
                 top: '50%',
                 transform: 'translateY(-50%)',
-                color: colors.textMuted
+                color: colors.textMuted,
+                pointerEvents: 'none'
               }} />
               <input
                 type="password"
