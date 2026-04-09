@@ -7,16 +7,14 @@ const WelcomeView = ({ onChooseGuest, onChooseLogin }) => {
     <div style={{
       ...styles.bodyWrapper,
       display: 'flex',
-      flexDirection: 'column',
-      minHeight: '100dvh',
+      alignItems: 'center',
+      justifyContent: 'center',
       padding: '20px',
-      background: 'radial-gradient(circle at top right, #1e293b, #0f172a)',
-      overflowY: 'auto'
+      background: 'radial-gradient(circle at top right, #1e293b, #0f172a)'
     }}>
-    <div style={{ margin: 'auto', width: '100%', maxWidth: '480px' }}>
       <div style={{
         ...styles.whiteCard,
-        maxWidth: '100%',
+        maxWidth: '480px',
         width: '100%',
         padding: '50px 40px',
         textAlign: 'center',

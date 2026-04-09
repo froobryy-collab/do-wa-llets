@@ -49,13 +49,11 @@ const AuthView = ({ setSession, onBack }) => {
     <div style={{
       ...styles.bodyWrapper,
       display: 'flex',
-      flexDirection: 'column',
-      minHeight: '100dvh',
+      alignItems: 'center',
+      justifyContent: 'center',
       padding: '20px',
-      background: 'radial-gradient(circle at top right, #1e293b, #0f172a)',
-      overflowY: 'auto'
+      background: 'radial-gradient(circle at top right, #1e293b, #0f172a)'
     }}>
-      <div style={{ margin: 'auto', width: '100%' }}>
       <div style={{
         ...styles.whiteCard,
         maxWidth: '400px',
@@ -113,8 +111,6 @@ const AuthView = ({ setSession, onBack }) => {
                 required
                 style={{
                   ...styles.input,
-                  position: 'relative',
-                  zIndex: 10,
                   width: '100%',
                   paddingLeft: '40px',
                   boxSizing: 'border-box',
@@ -148,8 +144,6 @@ const AuthView = ({ setSession, onBack }) => {
                 required
                 style={{
                   ...styles.input,
-                  position: 'relative',
-                  zIndex: 10,
                   width: '100%',
                   paddingLeft: '40px',
                   boxSizing: 'border-box',
