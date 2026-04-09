@@ -1,5 +1,13 @@
 {
   "appId": "com.dowallets.app",
   "appName": "Do-Wa-llets",
-  "webDir": "dist"
+  "webDir": "dist",
+  "plugins": {
+    "StatusBar": {
+      "style": "DARK"
+    },
+    "Keyboard": {
+      "resize": "body"
+    }
+  }
 }
