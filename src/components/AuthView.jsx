@@ -60,12 +60,11 @@ const AuthView = ({ setSession, onBack }) => {
         ...styles.whiteCard,
         maxWidth: '400px',
         width: '100%',
-        padding: '40px 30px',
+        padding: '30px 20px',
         textAlign: 'center',
-        background: 'rgba(30, 41, 59, 0.7)',
-        backdropFilter: 'blur(10px)',
+        background: '#1E293B',
         border: `1px solid rgba(255, 255, 255, 0.1)`,
-        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)'
       }}>
         <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '10px' }}>
           <button onClick={onBack} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
@@ -113,6 +112,8 @@ const AuthView = ({ setSession, onBack }) => {
                 required
                 style={{
                   ...styles.input,
+                  position: 'relative',
+                  zIndex: 10,
                   width: '100%',
                   paddingLeft: '40px',
                   boxSizing: 'border-box',
@@ -145,6 +146,8 @@ const AuthView = ({ setSession, onBack }) => {
                 required
                 style={{
                   ...styles.input,
+                  position: 'relative',
+                  zIndex: 10,
                   width: '100%',
                   paddingLeft: '40px',
                   boxSizing: 'border-box',

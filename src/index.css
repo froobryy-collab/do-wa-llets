@@ -52,8 +52,10 @@ body.dark-mode {
 
 }
 
-
-
+/* RESET BOX SIZING GLOBALLY TO PREVENT HORIZONTAL SCROLL LEAKS */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
