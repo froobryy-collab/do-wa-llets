@@ -146,7 +146,7 @@ export const styles = {
   },
   inputGroup: { display: "flex", flexDirection: "column", flex: "1 1 150px" },
   label: { fontSize: "0.85rem", color: colors.textMain, marginBottom: "6px", fontWeight: "600" },
-  input: { padding: "14px 16px", borderRadius: "14px", border: `1.5px solid ${colors.border}`, background: colors.bg, color: colors.textMain, fontSize: "0.95rem", outline: "none", transition: "border-color 0.2s", WebkitUserSelect: "text", userSelect: "text", pointerEvents: "auto", WebkitTouchCallout: "default" },
+  input: { padding: "12px", borderRadius: "10px", border: `1.5px solid ${colors.border}`, background: colors.bg, color: colors.textMain, fontSize: "0.9rem", outline: "none", transition: "border-color 0.2s" },
   button: { padding: "14px 24px", borderRadius: "14px", border: "none", color: "white", background: `linear-gradient(135deg, ${colors.success}, #059669)`, fontWeight: "700", cursor: "pointer", boxShadow: '0 4px 10px rgba(16, 185, 129, 0.25)', transition: "transform 0.2s" },
   btnSecondary: { padding: "12px 20px", borderRadius: "14px", border: `1.5px solid ${colors.border}`, background: colors.bg, color: colors.textMain, fontWeight: "600", cursor: "pointer", fontSize: "0.9rem", transition: "all 0.2s" },
   btnDanger: { padding: "10px 18px", borderRadius: "10px", border: "none", background: colors.danger, color: "#fff", fontWeight: "600", cursor: "pointer", fontSize: "0.85rem", opacity: 0.9 },

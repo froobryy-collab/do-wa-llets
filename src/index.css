@@ -57,17 +57,7 @@ body.dark-mode {
   box-sizing: border-box;
 }
 
-/* FORCE ENABLE KEYBOARD AND TOUCH FOCUS DI PWA IOS STANDALONE */
-input, textarea, select {
-  -webkit-user-select: auto !important;
-  user-select: auto !important;
-  pointer-events: auto !important;
-  -webkit-touch-callout: default !important;
-}
-
-/* Membuat aplikasi web terasa seperti aplikasi native tanpa blokir input */
 body {
-  -webkit-tap-highlight-color: transparent;
   margin: 0;
   padding: 0;
   background-color: var(--bg);
@@ -80,11 +70,6 @@ body {
   padding: 0;
   display: block;
   box-sizing: border-box;
-  /* SAFE AREA FOR PWA (Mencegah tertutup notch bulat/poni HP dan bar bawah) */
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-  padding-left: env(safe-area-inset-left);
-  padding-right: env(safe-area-inset-right);
 }
 
 h1,
@@ -141,10 +126,6 @@ code {
     padding: 0;
   }
   
-  #root {
-    padding-top: calc(env(safe-area-inset-top) + 15px) !important;
-  }
-
   .mobile-p-10 {
     padding: 10px 15px !important;
   }
