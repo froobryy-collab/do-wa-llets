@@ -45,17 +45,14 @@ const AuthView = ({ setSession, onBack }) => {
     alert("Karena privasi tanpa email asli, pemulihan akun dilakukan manual. Silakan hubungi admin atau gunakan akun baru jika benar-benar lupa.");
   };
 
-  return (
     <div style={{
-      ...styles.bodyWrapper,
       display: 'block',
-      minHeight: '100vh',
       padding: '20px',
       paddingTop: '10vh',
-      background: 'radial-gradient(circle at top right, #1e293b, #0f172a)'
+      minHeight: '100vh',
+      backgroundColor: colors.bg
     }}>
       <div style={{
-        ...styles.whiteCard,
         maxWidth: '400px',
         margin: '0 auto',
         width: '100%',
@@ -100,14 +97,16 @@ const AuthView = ({ setSession, onBack }) => {
               placeholder="Masukkan username..."
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              required
               style={{
-                ...styles.input,
                 width: '100%',
+                padding: '16px',
+                borderRadius: '12px',
+                border: '1px solid #ccc',
+                fontSize: '16px',
                 boxSizing: 'border-box',
-                background: 'rgba(0,0,0,0.2)',
-                borderColor: 'rgba(255,255,255,0.1)',
-                color: '#fff'
+                WebkitUserSelect: 'text',
+                userSelect: 'text',
+                pointerEvents: 'auto'
               }}
             />
           </div>
@@ -122,14 +121,16 @@ const AuthView = ({ setSession, onBack }) => {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
               style={{
-                ...styles.input,
                 width: '100%',
+                padding: '16px',
+                borderRadius: '12px',
+                border: '1px solid #ccc',
+                fontSize: '16px',
                 boxSizing: 'border-box',
-                background: 'rgba(0,0,0,0.2)',
-                borderColor: 'rgba(255,255,255,0.1)',
-                color: '#fff'
+                WebkitUserSelect: 'text',
+                userSelect: 'text',
+                pointerEvents: 'auto'
               }}
             />
           </div>
