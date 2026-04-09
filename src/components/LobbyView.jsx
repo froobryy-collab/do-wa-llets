@@ -157,6 +157,11 @@ const LobbyView = ({
             <span style={{ fontWeight: '700', fontSize: '1.1rem' }}>{daftarDompet.length} Dompet</span>
           </div>
         </div>
+        
+        {/* Footer / Version Marker */}
+        <div style={{ textAlign: 'center', padding: '20px', color: colors.textMuted, fontSize: '0.8rem', opacity: 0.6 }}>
+          Do-Wa-llets v1.1 - Validated System
+        </div>
 
       </div>
     </div>
