@@ -6,15 +6,16 @@ const WelcomeView = ({ onChooseGuest, onChooseLogin }) => {
   return (
     <div style={{
       ...styles.bodyWrapper,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
+      display: 'block',
+      minHeight: '100vh',
       padding: '20px',
+      paddingTop: '10vh',
       background: 'radial-gradient(circle at top right, #1e293b, #0f172a)'
     }}>
       <div style={{
         ...styles.whiteCard,
         maxWidth: '480px',
+        margin: '0 auto',
         width: '100%',
         padding: '50px 40px',
         textAlign: 'center',
