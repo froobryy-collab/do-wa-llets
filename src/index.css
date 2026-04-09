@@ -68,7 +68,6 @@ input, textarea, select {
 /* Membuat aplikasi web terasa seperti aplikasi native tanpa blokir input */
 body {
   -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
   margin: 0;
   padding: 0;
   background-color: var(--bg);
