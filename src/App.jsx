@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 // Import alat grafik dan ikon
 import { ResponsiveContainer } from 'recharts';
-import { ArrowLeft, PieChart as ChartIcon, List as ListIcon, Sun, Moon, TrendingUp } from 'lucide-react';
+import { ArrowLeft, PieChart as ChartIcon, List as ListIcon, Sun, Moon, TrendingUp, LogOut } from 'lucide-react';
 
 // Import tema & gaya
 import { colors, styles } from "./constants/theme";
@@ -17,7 +17,7 @@ import WalletHeader from "./components/WalletHeader";
 import WalletDashboard from "./components/WalletDashboard";
 import ReportFilters from "./components/ReportFilters";
 import AuthView from "./components/AuthView";
-
+import WelcomeView from "./components/WelcomeView";
 
 // 🎨 PALET WARNA BRANKAS PUSAT (Sekarang Dinamis)
 
