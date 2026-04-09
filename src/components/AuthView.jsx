@@ -45,6 +45,7 @@ const AuthView = ({ setSession, onBack }) => {
     alert("Karena privasi tanpa email asli, pemulihan akun dilakukan manual. Silakan hubungi admin atau gunakan akun baru jika benar-benar lupa.");
   };
 
+  return (
     <div style={{
       display: 'block',
       padding: '20px',
