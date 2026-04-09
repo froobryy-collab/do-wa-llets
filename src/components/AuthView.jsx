@@ -95,32 +95,21 @@ const AuthView = ({ setSession, onBack }) => {
         <form onSubmit={handleAuth} style={{ textAlign: 'left' }}>
           <div style={{ marginBottom: '20px' }}>
             <label style={{ ...styles.label, color: 'rgba(255, 255, 255, 0.7)' }}>Username</label>
-            <div style={{ position: 'relative' }}>
-              <User size={18} style={{
-                position: 'absolute',
-                left: '12px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: colors.textMuted,
-                pointerEvents: 'none'
-              }} />
-              <input
-                type="text"
-                placeholder="Masukkan username..."
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                style={{
-                  ...styles.input,
-                  width: '100%',
-                  paddingLeft: '40px',
-                  boxSizing: 'border-box',
-                  background: 'rgba(0,0,0,0.2)',
-                  borderColor: 'rgba(255,255,255,0.1)',
-                  color: '#fff'
-                }}
-              />
-            </div>
+            <input
+              type="text"
+              placeholder="Masukkan username..."
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              style={{
+                ...styles.input,
+                width: '100%',
+                boxSizing: 'border-box',
+                background: 'rgba(0,0,0,0.2)',
+                borderColor: 'rgba(255,255,255,0.1)',
+                color: '#fff'
+              }}
+            />
           </div>
 
           <div style={{ marginBottom: '30px' }}>
@@ -128,32 +117,21 @@ const AuthView = ({ setSession, onBack }) => {
               <label style={{ ...styles.label, marginBottom: 0, color: 'rgba(255, 255, 255, 0.7)' }}>Password</label>
               <button type="button" onClick={handleForgot} style={{ background: 'none', border: 'none', color: colors.blue, fontSize: '0.75rem', cursor: 'pointer' }}>Lupa Akun?</button>
             </div>
-            <div style={{ position: 'relative' }}>
-              <Lock size={18} style={{
-                position: 'absolute',
-                left: '12px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: colors.textMuted,
-                pointerEvents: 'none'
-              }} />
-              <input
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                style={{
-                  ...styles.input,
-                  width: '100%',
-                  paddingLeft: '40px',
-                  boxSizing: 'border-box',
-                  background: 'rgba(0,0,0,0.2)',
-                  borderColor: 'rgba(255,255,255,0.1)',
-                  color: '#fff'
-                }}
-              />
-            </div>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              style={{
+                ...styles.input,
+                width: '100%',
+                boxSizing: 'border-box',
+                background: 'rgba(0,0,0,0.2)',
+                borderColor: 'rgba(255,255,255,0.1)',
+                color: '#fff'
+              }}
+            />
           </div>
 
           {message && (
