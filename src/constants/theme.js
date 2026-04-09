@@ -61,17 +61,17 @@ export const styles = {
   },
   whiteCard: {
     background: colors.card,
-    padding: '18px 22px',
-    borderRadius: '16px',
+    padding: '24px',
+    borderRadius: '24px',
     border: `1px solid ${colors.border}`,
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
+    boxShadow: '0 10px 20px -5px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05)',
   },
   mainCard: {
     background: colors.card,
-    padding: '20px',
-    borderRadius: '16px',
+    padding: '24px',
+    borderRadius: '24px',
     border: `1px solid ${colors.border}`,
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05)',
+    boxShadow: '0 10px 20px -5px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05)',
   },
   cardLabel: {
     margin: 0,
@@ -146,9 +146,9 @@ export const styles = {
   },
   inputGroup: { display: "flex", flexDirection: "column", flex: "1 1 150px" },
   label: { fontSize: "0.85rem", color: colors.textMain, marginBottom: "6px", fontWeight: "600" },
-  input: { padding: "12px", borderRadius: "10px", border: `1.5px solid ${colors.border}`, background: colors.bg, color: colors.textMain, fontSize: "0.9rem", outline: "none", transition: "border-color 0.2s" },
-  button: { padding: "12px 24px", borderRadius: "10px", border: "none", color: "white", background: `linear-gradient(135deg, ${colors.success}, #059669)`, fontWeight: "700", cursor: "pointer", boxShadow: '0 4px 10px rgba(16, 185, 129, 0.2)', transition: "transform 0.2s" },
-  btnSecondary: { padding: "10px 18px", borderRadius: "10px", border: `1px solid ${colors.border}`, background: colors.card, color: colors.textMain, fontWeight: "600", cursor: "pointer", fontSize: "0.85rem", transition: "all 0.2s", boxShadow: colors.shadow },
+  input: { padding: "14px 16px", borderRadius: "14px", border: `1.5px solid ${colors.border}`, background: colors.bg, color: colors.textMain, fontSize: "0.95rem", outline: "none", transition: "border-color 0.2s" },
+  button: { padding: "14px 24px", borderRadius: "14px", border: "none", color: "white", background: `linear-gradient(135deg, ${colors.success}, #059669)`, fontWeight: "700", cursor: "pointer", boxShadow: '0 4px 10px rgba(16, 185, 129, 0.25)', transition: "transform 0.2s" },
+  btnSecondary: { padding: "12px 20px", borderRadius: "14px", border: `1.5px solid ${colors.border}`, background: colors.bg, color: colors.textMain, fontWeight: "600", cursor: "pointer", fontSize: "0.9rem", transition: "all 0.2s" },
   btnDanger: { padding: "10px 18px", borderRadius: "10px", border: "none", background: colors.danger, color: "#fff", fontWeight: "600", cursor: "pointer", fontSize: "0.85rem", opacity: 0.9 },
   actionBtn: { cursor: "pointer", fontSize: "1.1rem", transition: "transform 0.1s" }
 };
