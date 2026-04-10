@@ -10,7 +10,7 @@ const TransactionTable = ({
   handleDeleteTransaction
 }) => {
   return (
-    <div style={styles.mainCard}>
+    <div style={styles.mainCard} className="mobile-p-10">
       <h3 style={styles.sectionTitle}>Riwayat Transaksi Terakhir</h3>
       <div style={styles.tableResponsive}>
         <table style={styles.table}>
