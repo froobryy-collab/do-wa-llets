@@ -81,7 +81,7 @@ export default function App() {
   }, [isDarkMode]);
 
   const toggleThemeButton = (
-    <div style={{ display: 'flex', gap: '8px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
       <button
         onClick={() => setIsDarkMode(!isDarkMode)}
         style={{ ...styles.btnSecondary, display: 'flex', alignItems: 'center', gap: '8px', padding: '10px' }}
