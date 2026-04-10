@@ -40,10 +40,13 @@ const WelcomeView = ({ onChooseGuest, onChooseLogin }) => {
         </div>
 
         <h1 style={{
-          ...styles.brankasTitle,
+          fontFamily: "'Outfit', sans-serif",
+          fontWeight: '800',
+          letterSpacing: '-0.04em',
+          lineHeight: '1.1',
           fontSize: '2.5rem',
           marginBottom: '10px',
-          color: '#fff'
+          color: '#ffffff'
         }}>Do-Wa-llets</h1>
         <p style={{
           ...styles.globalRingkasan,
