@@ -129,6 +129,10 @@ code {
     padding: 0;
   }
   
+  #root {
+    padding-top: 35px !important; /* MENGHINDARI STATUS BAR / NOTCH HP */
+  }
+  
   .mobile-p-10 {
     padding: 10px 15px !important;
   }
