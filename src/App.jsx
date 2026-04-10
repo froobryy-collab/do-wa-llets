@@ -215,23 +215,28 @@ export default function App() {
         const pengeluaranDompet = dataPengeluaran.filter(p => p.kode_grup === namaDompet && p.tanggal.startsWith(bulanSekarang));
 
         const totalPemasukan = pengeluaranDompet.filter(p => p.jenis === "pemasukan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
-        const totalPengeluaran = pengeluaranDompet.filter(p => p.jenis === "pengeluaran").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+        // Murni pengeluaran saja
+        const pengeluaranMurni = pengeluaranDompet.filter(p => p.jenis === "pengeluaran").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+        // Uang yang diamankan/ditabung (keluar dari kas aktif)
+        const totalSaved = pengeluaranDompet.filter(p => p.jenis === "tarik_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
 
         const modal = dataTab ? parseFloat(dataTab.modal_awal) : 0;
         const tabunganBulanIni = dataTab ? parseFloat(dataTab.tabungan_bulan_ini) : 0;
         const totalSemua = dataTab ? parseFloat(dataTab.total_tabungan_semua) : 0;
 
-        const sisaUang = modal + totalPemasukan - totalPengeluaran;
+        // PERBAIKAN: Sisa Kas Aktif harus dikurangi uang yang ditabung karena ditarik dari kas!
+        const sisaUang = modal + totalPemasukan - pengeluaranMurni - totalSaved;
 
         hitungModalTerdaftar += modal;
         hitungTotalPemasukan += totalPemasukan;
-        hitungTotalPengeluaran += totalPengeluaran;
+        // Kartu merah di dashboard tingkat atas HANYA menampilkan pengeluaran konsumtif rill (murni)
+        hitungTotalPengeluaran += pengeluaranMurni;
 
         return {
           nama: namaDompet,
           modalAwal: modal,
           pemasukan: totalPemasukan,
-          pengeluaran: totalPengeluaran,
+          pengeluaran: pengeluaranMurni + totalSaved, // Gabungkan arus keluar agar tabel tidak membingungkan
           sisaUang: sisaUang,
         };
       });
