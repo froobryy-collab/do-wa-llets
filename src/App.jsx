@@ -26,6 +26,14 @@ import WelcomeView from "./components/WelcomeView";
 export default function App() {
   document.title = "Do-Wa-llets";
 
+  const isTrxActive = (tanggalTransaksi, currentMonth) => {
+    if (currentMonth <= "2026-04") {
+      return tanggalTransaksi <= "2026-04-31";
+    }
+    return tanggalTransaksi.startsWith(currentMonth);
+  };
+
+
   // Auth & Navigation State
   const [session, setSession] = useState(null);
   const [appMode, setAppMode] = useState("welcome"); // welcome | guest | member
