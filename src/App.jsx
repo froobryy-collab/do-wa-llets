@@ -184,7 +184,7 @@ export default function App() {
 
   const fetchDaftarDompet = async () => {
     if (appMode === "welcome" || appMode === "auth") return;
-    
+
     // Logika Filter Hybrid
     let queryPengeluaran = supabase.from("pengeluaran").select("kode_grup, nominal, jenis, tanggal");
     let queryTabungan = supabase.from("tabungan").select("*");
@@ -209,33 +209,33 @@ export default function App() {
       let hitungTotalPengeluaran = 0;
       let hitungTabunganTerkunci = 0;
 
-      // 1. DATA UNTUK DASHBOARD (MENGABUNGKAN SEMUA WAKTU SAMPAI MEI)
+      // 1. DATA UNTUK DASHBOARD DENGAN LOGIKA ACTIVE PERIOD BARU
       const listLengkap = uniqueWallets.map(namaDompet => {
         const dataTab = dataTabungan?.find(t => t.kode_grup === namaDompet);
         
-        // Transaksi SEPANJANG WAKTU (karena user meminta akumulasi terus sampai 30 april)
-        const pengeluaranSemuaWaktu = dataPengeluaran.filter(p => p.kode_grup === namaDompet);
+        // Transaksi aktif sesuai hukum waktu (Sampai April Gabung, Mei Pisah)
+        const pengeluaranAktif = dataPengeluaran.filter(p => p.kode_grup === namaDompet && isTrxActive(p.tanggal, bulanSekarang));
 
-        // Agregasi Sepanjang Waktu
-        const totalPemasukanSemua = pengeluaranSemuaWaktu.filter(p => p.jenis === "pemasukan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
-        const pengeluaranMurniSemua = pengeluaranSemuaWaktu.filter(p => p.jenis === "pengeluaran").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
-        const totalSavedSemua = pengeluaranSemuaWaktu.filter(p => p.jenis === "tarik_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+        // Agregasi Periode Aktif
+        const totalPemasukanAktif = pengeluaranAktif.filter(p => p.jenis === "pemasukan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+        const pengeluaranMurniAktif = pengeluaranAktif.filter(p => p.jenis === "pengeluaran").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+        const totalSavedAktif = pengeluaranAktif.filter(p => p.jenis === "tarik_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
 
         const modal = dataTab ? parseFloat(dataTab.modal_awal) : 0;
 
-        // Hitung secara global
-        const sisaUangAsli = modal + totalPemasukanSemua - pengeluaranMurniSemua - totalSavedSemua;
+        // Hitung Saldo berdasarkan transaksi aktif dan modal statis
+        const sisaUangAsli = modal + totalPemasukanAktif - pengeluaranMurniAktif - totalSavedAktif;
 
         hitungModalTerdaftar += modal;
-        hitungTotalPemasukan += totalPemasukanSemua;
-        hitungTotalPengeluaran += pengeluaranMurniSemua; // Tampilkan pengeluaran global
+        hitungTotalPemasukan += totalPemasukanAktif;
+        hitungTotalPengeluaran += pengeluaranMurniAktif;
 
         return {
           nama: namaDompet,
           modalAwal: modal,
-          pemasukan: totalPemasukanSemua, // Tampilkan uang yg masuk global
-          pengeluaran: pengeluaranMurniSemua + totalSavedSemua, // Tampilkan uang yg keluar global
-          sisaUang: sisaUangAsli, // Sisa Uang Real-time Global
+          pemasukan: totalPemasukanAktif,
+          pengeluaran: pengeluaranMurniAktif + totalSavedAktif,
+          sisaUang: sisaUangAsli,
         };
       });
 
@@ -271,7 +271,7 @@ export default function App() {
   const fetchKeuanganDompet = async () => {
     if (!kodeDompet) return;
     let query = supabase.from("tabungan").select("*").eq("kode_grup", kodeDompet.toLowerCase());
-    
+
     if (appMode === "member" && session) {
       query = query.eq("user_id", session.user.id);
     } else {
@@ -294,12 +294,9 @@ export default function App() {
 
   const checkAndSweepMonthlyData = async () => {
     if (!kodeDompet) return;
-    const bulanSekarang = new Date().toISOString().slice(0, 7);
-
-    // KUNCI: Jangan lakukan SAPUAN ULANG jika belum masuk bulan Mei 2026 ke atas!
-    // Membiarkan data menumpuk memanjang secara akumulatif.
+    const bulanSekarang = new Date().toISOString().slice(0, 7)    // KUNCI: Jangan lakukan SAPUAN ULANG OMAPTIS JIKA BELUM MEI. MULAI MEI AKAN MUNCUL PROMPT!
     if (bulanSekarang < "2026-05") {
-      return; 
+      return;
     }
 
     let queryBulan = supabase.from("tabungan").select("*").eq("kode_grup", kodeDompet.toLowerCase());
@@ -318,34 +315,39 @@ export default function App() {
       } else {
         queryTrans = queryTrans.is("user_id", null);
       }
-      
+
       const { data: semuaTransaksi } = await queryTrans;
+      const oldMonth = dataKeuangan.bulan_aktif;
 
-      // Sekarang kita hanya mengambil transaksi yang tipenya "tarik_tabungan"
-      const totalYangDiSaved = semuaTransaksi
-        .filter(p => p.jenis === "tarik_tabungan")
-        .reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+      // Filter khusus HANYA transaksi yang terjadi di periode/bulan LALU untuk diakumulasi!
+      const trxBulanLalu = semuaTransaksi.filter(p => isTrxActive(p.tanggal, oldMonth));
 
-      // Sisa uang bulan lalu (untuk modal bulan baru) tetap dihitung utuh
-      const totalPemasukan = semuaTransaksi.filter(p => p.jenis === "pemasukan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
-      const totalPengeluaran = semuaTransaksi.filter(p => p.jenis !== "pemasukan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+      const totalYangDiSaved = trxBulanLalu.filter(p => p.jenis === "tarik_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+      const totalPemasukan = trxBulanLalu.filter(p => p.jenis === "pemasukan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+      const totalPengeluaran = trxBulanLalu.filter(p => p.jenis !== "pemasukan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
       const sisaUangBulanLalu = parseFloat(dataKeuangan.modal_awal) + totalPemasukan - totalPengeluaran;
 
-      // Tabungan permanen hanya bertambah dari yang kamu "Saved" saja
+      // PROMPT MANUAL BULANAN UNTUK MEMINTA USER MENGATUR MODAL!
+      const pesanPrompt = `📅 BULAN BARU (${bulanSekarang}) TELAH TIBA!\n\nData bulan lalu telah sukses dimasukkan ke Arsip.\n\nINFO: Sisa uang Anda di penutupan periode kemarin adalah:\n👉 Rp ${sisaUangBulanLalu.toLocaleString("id-ID")}\n\nSilakan ketik nominal setoran Modal Awal Anda untuk memulai pencatatan bulan ini:`;
+      const inputNominal = window.prompt(pesanPrompt, sisaUangBulanLalu);
+      
+      const newModal = (inputNominal !== null && !isNaN(inputNominal) && inputNominal.trim() !== "") ? parseFloat(inputNominal) : sisaUangBulanLalu;
       const totalTabunganBaru = parseFloat(dataKeuangan.total_tabungan_semua) + totalYangDiSaved;
 
       await supabase
         .from("tabungan")
         .update({
-          modal_awal: sisaUangBulanLalu, // Sisa uang bulan lalu otomatis jadi modal sekarang
-          tabungan_bulan_ini: totalYangDiSaved, // Menampilkan berapa yang berhasil ditabung bulan lalu
+          modal_awal: newModal, 
+          tabungan_bulan_ini: totalYangDiSaved, 
           total_tabungan_semua: totalTabunganBaru,
           bulan_aktif: bulanSekarang
         })
         .eq("kode_grup", kodeDompet.toLowerCase());
 
-      alert(`📅 Bulan Baru (${bulanSekarang})! Saldo yang kamu "Saved" sebesar Rp ${totalYangDiSaved.toLocaleString("id-ID")} telah masuk ke Brankas Permanen. Sisa saldo lainnya otomatis jadi modal awal baru.`);
+      alert(`✅ Berhasil! Modal awal Anda di bulan ${bulanSekarang} telah diset menjadi Rp ${newModal.toLocaleString("id-ID")}. Transaksi yang lalu sudah aman di arsip!`);
       fetchKeuanganDompet();
+      fetchDaftarDompet();
+    }
     }
   };
 
@@ -372,9 +374,9 @@ export default function App() {
       }
       await updateQuery;
     } else {
-      const payload = { 
-        kode_grup: kodeDompet.toLowerCase(), 
-        modal_awal: parseFloat(inputModal), 
+      const payload = {
+        kode_grup: kodeDompet.toLowerCase(),
+        modal_awal: parseFloat(inputModal),
         bulan_aktif: bulanSekarang,
         user_id: (appMode === "member" && session) ? session.user.id : null
       };
@@ -391,7 +393,7 @@ export default function App() {
   const fetchData = async () => {
     if (!kodeDompet) return;
     let queryFetch = supabase.from("pengeluaran").select("*").eq("kode_grup", kodeDompet.toLowerCase());
-    
+
     if (appMode === "member" && session) {
       queryFetch = queryFetch.eq("user_id", session.user.id);
     } else {
@@ -414,9 +416,9 @@ export default function App() {
 
   };
 
-  useEffect(() => { 
+  useEffect(() => {
     if (appMode === "guest" || (appMode === "member" && session)) {
-      fetchDaftarDompet(); 
+      fetchDaftarDompet();
     }
   }, [appMode, session]);
 
@@ -441,7 +443,7 @@ export default function App() {
       setLoading(true);
       let up1 = supabase.from("pengeluaran").update({ kode_grup: fixNamaBaru }).eq("kode_grup", kodeDompet.toLowerCase());
       let up2 = supabase.from("tabungan").update({ kode_grup: fixNamaBaru }).eq("kode_grup", kodeDompet.toLowerCase());
-      
+
       if (appMode === "member" && session) {
         up1 = up1.eq("user_id", session.user.id);
         up2 = up2.eq("user_id", session.user.id);
@@ -496,7 +498,7 @@ export default function App() {
       setLoading(true);
       let d1 = supabase.from("pengeluaran").delete().eq("kode_grup", kodeDompet.toLowerCase());
       let d2 = supabase.from("tabungan").delete().eq("kode_grup", kodeDompet.toLowerCase());
-      
+
       if (appMode === "member" && session) {
         d1 = d1.eq("user_id", session.user.id);
         d2 = d2.eq("user_id", session.user.id);
@@ -527,13 +529,13 @@ export default function App() {
         .from("pengeluaran")
         .update({ keterangan: form.keterangan, nominal: parseFloat(form.nominal), tanggal: form.tanggal, jenis: form.jenis, kategori: form.kategori })
         .eq('id', currentId);
-        
+
       if (appMode === "member" && session) {
         queryUp = queryUp.eq("user_id", session.user.id);
       } else {
         queryUp = queryUp.is("user_id", null);
       }
-      
+
       const { error } = await queryUp;
 
       if (error) {
@@ -542,14 +544,14 @@ export default function App() {
         handleCancelEdit();
       }
     } else {
-      const { error } = await supabase.from("pengeluaran").insert([{ 
-        keterangan: form.keterangan, 
-        nominal: parseFloat(form.nominal), 
-        tanggal: form.tanggal, 
-        kode_grup: kodeDompet.toLowerCase(), 
-        jenis: form.jenis, 
+      const { error } = await supabase.from("pengeluaran").insert([{
+        keterangan: form.keterangan,
+        nominal: parseFloat(form.nominal),
+        tanggal: form.tanggal,
+        kode_grup: kodeDompet.toLowerCase(),
+        jenis: form.jenis,
         kategori: form.kategori,
-        user_id: (appMode === "member" && session) ? session.user.id : null 
+        user_id: (appMode === "member" && session) ? session.user.id : null
       }]);
 
       if (error) {
@@ -590,17 +592,20 @@ export default function App() {
     });
   };
 
-  // FILTER DICABUT KEMBALI KARENA USER MINTA DATA DI GABUNG DARI AWAL INPUT SAMPAI APRIL
-  const totalPemasukanAktif = pengeluaran
+  // LOGIKA AKTIF MENGGUNAKAN HUKUM SIKLUS WAKTU BARU
+  const bulanSedangBerjalan = new Date().toISOString().slice(0, 7);
+  const pengeluaranAktifBulanIni = pengeluaran.filter(item => isTrxActive(item.tanggal, bulanSedangBerjalan));
+
+  const totalPemasukanAktif = pengeluaranAktifBulanIni
     .filter(item => item.jenis === "pemasukan")
     .reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
-  const totalPengeluaranAktif = pengeluaran
+  const totalPengeluaranAktif = pengeluaranAktifBulanIni
     .filter(item => item.jenis === "pengeluaran" || item.jenis === "tarik_tabungan")
     .reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
   const sisaUangAktif = keuangan.modal_awal + totalPemasukanAktif - totalPengeluaranAktif;
 
   // --- RENDERING VIEWS (STATE MACHINE) ---
-  
+
   // 0. PRINT VIEW
   if (printData) {
     return (
@@ -611,45 +616,45 @@ export default function App() {
         </div>
         <div style={{ textAlign: 'center', marginBottom: '30px' }}>
           <h2 style={{ color: '#000' }}>Laporan Arus Kas: {kodeDompet.toUpperCase()}</h2>
-          <p>Periode laporan: <b>{printData.labelPeriode}</b><br/>Dicetak pada: {new Date().toISOString().slice(0, 10)}</p>
+          <p>Periode laporan: <b>{printData.labelPeriode}</b><br />Dicetak pada: {new Date().toISOString().slice(0, 10)}</p>
         </div>
         <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #ddd' }}>
-            <thead>
-              <tr style={{ background: '#f4f4f4' }}>
-                <th style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'left', color: '#000' }}>Tanggal</th>
-                <th style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'left', color: '#000' }}>Kategori</th>
-                <th style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'left', color: '#000' }}>Keterangan</th>
-                <th style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'left', color: '#000' }}>Nominal</th>
+          <thead>
+            <tr style={{ background: '#f4f4f4' }}>
+              <th style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'left', color: '#000' }}>Tanggal</th>
+              <th style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'left', color: '#000' }}>Kategori</th>
+              <th style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'left', color: '#000' }}>Keterangan</th>
+              <th style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'left', color: '#000' }}>Nominal</th>
+            </tr>
+          </thead>
+          <tbody>
+            {printData.dataDisaring.map((item, idx) => (
+              <tr key={idx}>
+                <td style={{ border: '1px solid #ddd', padding: '10px', color: '#000' }}>{item.tanggal}</td>
+                <td style={{ border: '1px solid #ddd', padding: '10px', color: '#000', textTransform: 'capitalize' }}>{item.kategori || "Lainnya"}</td>
+                <td style={{ border: '1px solid #ddd', padding: '10px', color: '#000' }}>{item.keterangan}</td>
+                <td style={{ border: '1px solid #ddd', padding: '10px', color: '#000' }}>Rp {parseFloat(item.nominal).toLocaleString("id-ID")}</td>
               </tr>
-            </thead>
-            <tbody>
-              {printData.dataDisaring.map((item, idx) => (
-                <tr key={idx}>
-                  <td style={{ border: '1px solid #ddd', padding: '10px', color: '#000' }}>{item.tanggal}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '10px', color: '#000', textTransform: 'capitalize' }}>{item.kategori || "Lainnya"}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '10px', color: '#000' }}>{item.keterangan}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '10px', color: '#000' }}>Rp {parseFloat(item.nominal).toLocaleString("id-ID")}</td>
-                </tr>
-              ))}
-            </tbody>
-            <tfoot style={{ background: '#f8fafc', fontWeight: 'bold' }}>
-              <tr>
-                <td colSpan="3" style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'right', color: '#10B981' }}>TOTAL PEMASUKAN (+):</td>
-                <td style={{ border: '1px solid #ddd', padding: '10px', color: '#10B981' }}>Rp {printData.tlnPemasukan.toLocaleString("id-ID")}</td>
-              </tr>
-              <tr>
-                <td colSpan="3" style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'right', color: '#EF4444' }}>TOTAL PENGELUARAN (-):</td>
-                <td style={{ border: '1px solid #ddd', padding: '10px', color: '#EF4444' }}>Rp {printData.tlnPengeluaran.toLocaleString("id-ID")}</td>
-              </tr>
-              <tr>
-                <td colSpan="3" style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'right', color: '#3B82F6' }}>TOTAL TABUNGAN (🔒):</td>
-                <td style={{ border: '1px solid #ddd', padding: '10px', color: '#3B82F6' }}>Rp {printData.tlnSaved.toLocaleString("id-ID")}</td>
-              </tr>
-              <tr style={{ background: '#f1f5f9', fontSize: '1.1em' }}>
-                <td colSpan="3" style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'right', color: '#000' }}>SALDO AKHIR PERIODE:</td>
-                <td style={{ border: '1px solid #ddd', padding: '10px', color: '#000' }}>Rp {(printData.tlnPemasukan - printData.tlnPengeluaran - printData.tlnSaved).toLocaleString("id-ID")}</td>
-              </tr>
-            </tfoot>
+            ))}
+          </tbody>
+          <tfoot style={{ background: '#f8fafc', fontWeight: 'bold' }}>
+            <tr>
+              <td colSpan="3" style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'right', color: '#10B981' }}>TOTAL PEMASUKAN (+):</td>
+              <td style={{ border: '1px solid #ddd', padding: '10px', color: '#10B981' }}>Rp {printData.tlnPemasukan.toLocaleString("id-ID")}</td>
+            </tr>
+            <tr>
+              <td colSpan="3" style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'right', color: '#EF4444' }}>TOTAL PENGELUARAN (-):</td>
+              <td style={{ border: '1px solid #ddd', padding: '10px', color: '#EF4444' }}>Rp {printData.tlnPengeluaran.toLocaleString("id-ID")}</td>
+            </tr>
+            <tr>
+              <td colSpan="3" style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'right', color: '#3B82F6' }}>TOTAL TABUNGAN (🔒):</td>
+              <td style={{ border: '1px solid #ddd', padding: '10px', color: '#3B82F6' }}>Rp {printData.tlnSaved.toLocaleString("id-ID")}</td>
+            </tr>
+            <tr style={{ background: '#f1f5f9', fontSize: '1.1em' }}>
+              <td colSpan="3" style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'right', color: '#000' }}>SALDO AKHIR PERIODE:</td>
+              <td style={{ border: '1px solid #ddd', padding: '10px', color: '#000' }}>Rp {(printData.tlnPemasukan - printData.tlnPengeluaran - printData.tlnSaved).toLocaleString("id-ID")}</td>
+            </tr>
+          </tfoot>
         </table>
       </div>
     );
@@ -666,7 +671,7 @@ export default function App() {
   }
 
   // 3. MAIN APP (GUEST OR MEMBER)
-  
+
   // TAMPILAN 0.1: HALAMAN RIWAYAT
   if (isHistory) return <HistoryView setIsHistory={setIsHistory} riwayatData={riwayatData} totals={totals} />;
 
