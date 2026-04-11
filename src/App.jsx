@@ -212,32 +212,37 @@ export default function App() {
       // 1. FILTER DATA UNTUK DASHBOARD (BULAN INI)
       const listLengkap = uniqueWallets.map(namaDompet => {
         const dataTab = dataTabungan?.find(t => t.kode_grup === namaDompet);
-        const pengeluaranDompet = dataPengeluaran.filter(p => p.kode_grup === namaDompet && p.tanggal.startsWith(bulanSekarang));
+        
+        // Transaksi HANYA bulan ini (untuk kartu Pemasukan/Pengeluaran atas)
+        const pengeluaranBulanIni = dataPengeluaran.filter(p => p.kode_grup === namaDompet && p.tanggal.startsWith(bulanSekarang));
+        
+        // Transaksi SEPANJANG WAKTU (untuk menghitung Total Sisa Uang Asli)
+        const pengeluaranSemuaWaktu = dataPengeluaran.filter(p => p.kode_grup === namaDompet);
 
-        const totalPemasukan = pengeluaranDompet.filter(p => p.jenis === "pemasukan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
-        // Murni pengeluaran saja
-        const pengeluaranMurni = pengeluaranDompet.filter(p => p.jenis === "pengeluaran").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
-        // Uang yang diamankan/ditabung (keluar dari kas aktif)
-        const totalSaved = pengeluaranDompet.filter(p => p.jenis === "tarik_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+        // Agregasi Bulan Ini
+        const totalPemasukanBulanIni = pengeluaranBulanIni.filter(p => p.jenis === "pemasukan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+        const pengeluaranMurniBulanIni = pengeluaranBulanIni.filter(p => p.jenis === "pengeluaran").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+        const totalSavedBulanIni = pengeluaranBulanIni.filter(p => p.jenis === "tarik_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+
+        // Agregasi Sepanjang Waktu
+        const totalPemasukanSemua = pengeluaranSemuaWaktu.filter(p => p.jenis === "pemasukan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+        const totalPengeluaranSemua = pengeluaranSemuaWaktu.filter(p => p.jenis !== "pemasukan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
 
         const modal = dataTab ? parseFloat(dataTab.modal_awal) : 0;
-        const tabunganBulanIni = dataTab ? parseFloat(dataTab.tabungan_bulan_ini) : 0;
-        const totalSemua = dataTab ? parseFloat(dataTab.total_tabungan_semua) : 0;
 
-        // PERBAIKAN: Sisa Kas Aktif harus dikurangi uang yang ditabung karena ditarik dari kas!
-        const sisaUang = modal + totalPemasukan - pengeluaranMurni - totalSaved;
+        // PERBAIKAN: Sisa Kas Aktif harus mencakup SEMUA riwayat transaksi agar persis sama dengan dalam dompet!
+        const sisaUangAsli = modal + totalPemasukanSemua - totalPengeluaranSemua;
 
         hitungModalTerdaftar += modal;
-        hitungTotalPemasukan += totalPemasukan;
-        // Kartu merah di dashboard tingkat atas HANYA menampilkan pengeluaran konsumtif rill (murni)
-        hitungTotalPengeluaran += pengeluaranMurni;
+        hitungTotalPemasukan += totalPemasukanBulanIni;
+        hitungTotalPengeluaran += pengeluaranMurniBulanIni; // Kartu atas hanya pengeluaran bulan ini
 
         return {
           nama: namaDompet,
           modalAwal: modal,
-          pemasukan: totalPemasukan,
-          pengeluaran: pengeluaranMurni + totalSaved, // Gabungkan arus keluar agar tabel tidak membingungkan
-          sisaUang: sisaUang,
+          pemasukan: totalPemasukanBulanIni, // Tampilkan uang yg masuk bulan ini
+          pengeluaran: pengeluaranMurniBulanIni + totalSavedBulanIni, // Tampilkan uang yg keluar bulan ini
+          sisaUang: sisaUangAsli, // TAMPILKAN SISA UANG BERDASARKAN SEMUA WAKTU SEPERTI DI DALAM DOMPET
         };
       });
 
