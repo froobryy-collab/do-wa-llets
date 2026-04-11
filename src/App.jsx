@@ -209,39 +209,33 @@ export default function App() {
       let hitungTotalPengeluaran = 0;
       let hitungTabunganTerkunci = 0;
 
-      // 1. FILTER DATA UNTUK DASHBOARD (BULAN INI)
+      // 1. DATA UNTUK DASHBOARD (MENGABUNGKAN SEMUA WAKTU SAMPAI MEI)
       const listLengkap = uniqueWallets.map(namaDompet => {
         const dataTab = dataTabungan?.find(t => t.kode_grup === namaDompet);
         
-        // Transaksi HANYA bulan ini (untuk kartu Pemasukan/Pengeluaran atas)
-        const pengeluaranBulanIni = dataPengeluaran.filter(p => p.kode_grup === namaDompet && p.tanggal.startsWith(bulanSekarang));
-        
-        // Transaksi SEPANJANG WAKTU (untuk menghitung Total Sisa Uang Asli)
+        // Transaksi SEPANJANG WAKTU (karena user meminta akumulasi terus sampai 30 april)
         const pengeluaranSemuaWaktu = dataPengeluaran.filter(p => p.kode_grup === namaDompet);
-
-        // Agregasi Bulan Ini
-        const totalPemasukanBulanIni = pengeluaranBulanIni.filter(p => p.jenis === "pemasukan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
-        const pengeluaranMurniBulanIni = pengeluaranBulanIni.filter(p => p.jenis === "pengeluaran").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
-        const totalSavedBulanIni = pengeluaranBulanIni.filter(p => p.jenis === "tarik_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
 
         // Agregasi Sepanjang Waktu
         const totalPemasukanSemua = pengeluaranSemuaWaktu.filter(p => p.jenis === "pemasukan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
-        const totalPengeluaranSemua = pengeluaranSemuaWaktu.filter(p => p.jenis !== "pemasukan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+        const pengeluaranMurniSemua = pengeluaranSemuaWaktu.filter(p => p.jenis === "pengeluaran").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+        const totalSavedSemua = pengeluaranSemuaWaktu.filter(p => p.jenis === "tarik_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
 
-        // PERBAIKAN: modal_awal dari DB sudah merupakan saldo patokan awal bulan hasil Sapuan (Sweep). 
-        // Jadi Sisa Kas JANGAN menambahkan transaksi sebelum bulan ini, nanti terhitung dua kali (Double-Count).
-        const sisaUangAsli = modal + totalPemasukanBulanIni - pengeluaranMurniBulanIni - totalSavedBulanIni;
+        const modal = dataTab ? parseFloat(dataTab.modal_awal) : 0;
+
+        // Hitung secara global
+        const sisaUangAsli = modal + totalPemasukanSemua - pengeluaranMurniSemua - totalSavedSemua;
 
         hitungModalTerdaftar += modal;
-        hitungTotalPemasukan += totalPemasukanBulanIni;
-        hitungTotalPengeluaran += pengeluaranMurniBulanIni; // Kartu atas hanya pengeluaran bulan ini
+        hitungTotalPemasukan += totalPemasukanSemua;
+        hitungTotalPengeluaran += pengeluaranMurniSemua; // Tampilkan pengeluaran global
 
         return {
           nama: namaDompet,
           modalAwal: modal,
-          pemasukan: totalPemasukanBulanIni, // Tampilkan uang yg masuk bulan ini
-          pengeluaran: pengeluaranMurniBulanIni + totalSavedBulanIni, // Tampilkan uang yg keluar bulan ini
-          sisaUang: sisaUangAsli, // TAMPILKAN SISA UANG BERDASARKAN BULAN BERJALAN SAJA KARENA MODAL SUDAH TER-ROLLOVER
+          pemasukan: totalPemasukanSemua, // Tampilkan uang yg masuk global
+          pengeluaran: pengeluaranMurniSemua + totalSavedSemua, // Tampilkan uang yg keluar global
+          sisaUang: sisaUangAsli, // Sisa Uang Real-time Global
         };
       });
 
@@ -301,6 +295,12 @@ export default function App() {
   const checkAndSweepMonthlyData = async () => {
     if (!kodeDompet) return;
     const bulanSekarang = new Date().toISOString().slice(0, 7);
+
+    // KUNCI: Jangan lakukan SAPUAN ULANG jika belum masuk bulan Mei 2026 ke atas!
+    // Membiarkan data menumpuk memanjang secara akumulatif.
+    if (bulanSekarang < "2026-05") {
+      return; 
+    }
 
     let queryBulan = supabase.from("tabungan").select("*").eq("kode_grup", kodeDompet.toLowerCase());
     if (appMode === "member" && session) {
@@ -590,14 +590,11 @@ export default function App() {
     });
   };
 
-  // FILTER DASHBOARD DOMPET JUGA WAJIB BERDASARKAN BULAN INI KARENA MODAL AWAL SUDAH DI-SWEEP
-  const bulanSedangBerjalan = new Date().toISOString().slice(0, 7);
-  const pengeluaranAktifBulanIni = pengeluaran.filter(item => item.tanggal.startsWith(bulanSedangBerjalan));
-
-  const totalPemasukanAktif = pengeluaranAktifBulanIni
+  // FILTER DICABUT KEMBALI KARENA USER MINTA DATA DI GABUNG DARI AWAL INPUT SAMPAI APRIL
+  const totalPemasukanAktif = pengeluaran
     .filter(item => item.jenis === "pemasukan")
     .reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
-  const totalPengeluaranAktif = pengeluaranAktifBulanIni
+  const totalPengeluaranAktif = pengeluaran
     .filter(item => item.jenis === "pengeluaran" || item.jenis === "tarik_tabungan")
     .reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
   const sisaUangAktif = keuangan.modal_awal + totalPemasukanAktif - totalPengeluaranAktif;
