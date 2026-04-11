@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 // Import alat grafik dan ikon
 import { ResponsiveContainer } from 'recharts';
-import { ArrowLeft, PieChart as ChartIcon, List as ListIcon, Sun, Moon, TrendingUp, LogOut } from 'lucide-react';
+import { ArrowLeft, PieChart as ChartIcon, List as ListIcon, Sun, Moon, TrendingUp, LogOut, HelpCircle } from 'lucide-react';
+
 
 // Import tema & gaya
 import { colors, styles } from "./constants/theme";
@@ -18,6 +19,8 @@ import WalletDashboard from "./components/WalletDashboard";
 import ReportFilters from "./components/ReportFilters";
 import AuthView from "./components/AuthView";
 import WelcomeView from "./components/WelcomeView";
+import GuideView from "./components/GuideView";
+
 
 // 🎨 PALET WARNA BRANKAS PUSAT (Sekarang Dinamis)
 
@@ -37,6 +40,16 @@ export default function App() {
   // Auth & Navigation State
   const [session, setSession] = useState(null);
   const [appMode, setAppMode] = useState("welcome"); // welcome | guest | member
+  const [showGuide, setShowGuide] = useState(false);
+
+  useEffect(() => {
+    const hasSeenGuide = localStorage.getItem("hasSeenGuide");
+    if (!hasSeenGuide && appMode !== "welcome" && appMode !== "auth") {
+      setShowGuide(true);
+      localStorage.setItem("hasSeenGuide", "true");
+    }
+  }, [appMode]);
+
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -89,7 +102,14 @@ export default function App() {
   }, [isDarkMode]);
 
   const toggleThemeButton = (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+    <div style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}>
+      <button
+        onClick={() => setShowGuide(true)}
+        style={{ ...styles.btnSecondary, display: 'flex', alignItems: 'center', gap: '8px', padding: '10px' }}
+        title="Panduan Lengkap"
+      >
+        <HelpCircle size={18} color={colors.blue} />
+      </button>
       <button
         onClick={() => setIsDarkMode(!isDarkMode)}
         style={{ ...styles.btnSecondary, display: 'flex', alignItems: 'center', gap: '8px', padding: '10px' }}
@@ -108,6 +128,7 @@ export default function App() {
       )}
     </div>
   );
+
 
 
 
@@ -784,9 +805,11 @@ return (
     <div style={{ textAlign: 'center', padding: '20px', color: colors.textMuted, fontSize: '0.8rem', opacity: 0.6 }}>
       Do-Wa-llets v1.1 - Validated System
     </div>
+    {showGuide && <GuideView onClose={() => setShowGuide(false)} />}
   </div>
 );
 }
+
 
 
 // 🎨 FINTECH STYLES SYSTEM (FULL WINDOW & MOBILE RESPONSIVE)
