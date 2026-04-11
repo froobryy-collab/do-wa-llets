@@ -228,10 +228,9 @@ export default function App() {
         const totalPemasukanSemua = pengeluaranSemuaWaktu.filter(p => p.jenis === "pemasukan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
         const totalPengeluaranSemua = pengeluaranSemuaWaktu.filter(p => p.jenis !== "pemasukan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
 
-        const modal = dataTab ? parseFloat(dataTab.modal_awal) : 0;
-
-        // PERBAIKAN: Sisa Kas Aktif harus mencakup SEMUA riwayat transaksi agar persis sama dengan dalam dompet!
-        const sisaUangAsli = modal + totalPemasukanSemua - totalPengeluaranSemua;
+        // PERBAIKAN: modal_awal dari DB sudah merupakan saldo patokan awal bulan hasil Sapuan (Sweep). 
+        // Jadi Sisa Kas JANGAN menambahkan transaksi sebelum bulan ini, nanti terhitung dua kali (Double-Count).
+        const sisaUangAsli = modal + totalPemasukanBulanIni - pengeluaranMurniBulanIni - totalSavedBulanIni;
 
         hitungModalTerdaftar += modal;
         hitungTotalPemasukan += totalPemasukanBulanIni;
@@ -242,7 +241,7 @@ export default function App() {
           modalAwal: modal,
           pemasukan: totalPemasukanBulanIni, // Tampilkan uang yg masuk bulan ini
           pengeluaran: pengeluaranMurniBulanIni + totalSavedBulanIni, // Tampilkan uang yg keluar bulan ini
-          sisaUang: sisaUangAsli, // TAMPILKAN SISA UANG BERDASARKAN SEMUA WAKTU SEPERTI DI DALAM DOMPET
+          sisaUang: sisaUangAsli, // TAMPILKAN SISA UANG BERDASARKAN BULAN BERJALAN SAJA KARENA MODAL SUDAH TER-ROLLOVER
         };
       });
 
@@ -591,11 +590,14 @@ export default function App() {
     });
   };
 
-  const totalPemasukanAktif = pengeluaran
+  // FILTER DASHBOARD DOMPET JUGA WAJIB BERDASARKAN BULAN INI KARENA MODAL AWAL SUDAH DI-SWEEP
+  const bulanSedangBerjalan = new Date().toISOString().slice(0, 7);
+  const pengeluaranAktifBulanIni = pengeluaran.filter(item => item.tanggal.startsWith(bulanSedangBerjalan));
 
+  const totalPemasukanAktif = pengeluaranAktifBulanIni
     .filter(item => item.jenis === "pemasukan")
     .reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
-  const totalPengeluaranAktif = pengeluaran
+  const totalPengeluaranAktif = pengeluaranAktifBulanIni
     .filter(item => item.jenis === "pengeluaran" || item.jenis === "tarik_tabungan")
     .reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
   const sisaUangAktif = keuangan.modal_awal + totalPemasukanAktif - totalPengeluaranAktif;
