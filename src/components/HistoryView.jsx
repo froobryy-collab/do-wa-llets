@@ -2,11 +2,15 @@ import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { colors, styles } from '../constants/theme';
 
-const HistoryView = ({ setIsHistory, riwayatData, totals }) => {
+const HistoryView = ({ setIsHistory, riwayatData, totals, toggleThemeButton }) => {
   return (
     <div style={styles.bodyWrapper}>
-      <div style={styles.fullContainer}>
+      <div style={styles.fullContainer} className="mobile-p-10">
+        <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '20px 20px 0 20px' }}>
+          {toggleThemeButton}
+        </div>
         <div style={styles.brankasHeader}>
+
           <h1 style={styles.brankasTitle}>Riwayat Kas</h1>
           <span style={styles.globalRingkasan}>Arsip Bulanan</span>
           <button onClick={() => setIsHistory(false)} style={{ ...styles.btnSecondary, marginTop: '15px' }}>

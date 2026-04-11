@@ -9,8 +9,10 @@ import { ArrowLeft, PieChart as ChartIcon, List as ListIcon, Sun, Moon, Trending
 import { colors, styles } from "./constants/theme";
 
 // Import Komponen Modular
+// TAMPILAN 0.1: HALAMAN RIWAYAT
 import HistoryView from "./components/HistoryView";
 import LobbyView from "./components/LobbyView";
+
 import AnalyticsView from "./components/AnalyticsView";
 import TransactionTable from "./components/TransactionTable";
 import TransactionForm from "./components/TransactionForm";
@@ -700,115 +702,124 @@ if (appMode === "auth" && !session) {
 
 // 3. MAIN APP (GUEST OR MEMBER)
 
-// TAMPILAN 0.1: HALAMAN RIWAYAT
-if (isHistory) return <HistoryView setIsHistory={setIsHistory} riwayatData={riwayatData} totals={totals} />;
+  // --- MAIN RENDER LOGIC ---
+  let mainContent = null;
 
-// TAMPILAN 1: BRANKAS PUSAT (LOBBY BARU)
-if (!isJoined) {
+  if (isHistory) {
+    mainContent = <HistoryView setIsHistory={setIsHistory} riwayatData={riwayatData} totals={totals} toggleThemeButton={toggleThemeButton} />;
+  } else if (!isJoined) {
+    mainContent = (
+      <LobbyView
+        toggleThemeButton={toggleThemeButton}
+        totals={totals}
+        handleJoin={handleJoin}
+        kodeDompet={kodeDompet}
+        setKodeDompet={setKodeDompet}
+        setIsHistory={setIsHistory}
+        daftarDompet={daftarDompet}
+        setIsJoined={setIsJoined}
+        appMode={appMode}
+        onChooseLogin={onChooseLogin}
+      />
+    );
+  } else {
+    mainContent = (
+      <div style={styles.bodyWrapper}>
+        <div style={styles.fullContainer} className="mobile-p-10">
+          <WalletHeader
+            isAnalyzing={isAnalyzing}
+            setIsAnalyzing={setIsAnalyzing}
+            kodeDompet={kodeDompet}
+            handleEditWalletName={handleEditWalletName}
+            setIsJoined={setIsJoined}
+            setPengeluaran={setPengeluaran}
+            fetchDaftarDompet={fetchDaftarDompet}
+            handleDeleteWallet={handleDeleteWallet}
+            toggleThemeButton={toggleThemeButton}
+          />
+
+          {/* METRICS DASHBOARD */}
+          <WalletDashboard
+            inputModal={inputModal}
+            setInputModal={setInputModal}
+            handleSetModal={handleSetModal}
+            keuangan={keuangan}
+            sisaUangAktif={sisaUangAktif}
+          />
+
+          {/* HALAMAN ANALISIS GRAFIK */}
+          {isAnalyzing && (
+            <AnalyticsView
+              setIsAnalyzing={setIsAnalyzing}
+              totalPengeluaranAktif={totalPengeluaranAktif}
+              pengeluaran={pengeluaran}
+              getTrendData={getTrendData}
+            />
+          )}
+
+          {/* SEMBUNYIKAN FORM & TABEL JIKA SEDANG ANALISIS */}
+          {!isAnalyzing && (
+            <>
+              {/* FORM INPUT */}
+              <TransactionForm
+                handleSubmit={handleSubmit}
+                form={form}
+                setForm={setForm}
+                loading={loading}
+                isEditing={isEditing}
+                handleCancelEdit={handleCancelEdit}
+              />
+
+              <ReportFilters
+                filterCetak={filterCetak}
+                setFilterCetak={setFilterCetak}
+                pilihanTgl={pilihanTgl}
+                setPilihanTgl={setPilihanTgl}
+                pilihanBln={pilihanBln}
+                setPilihanBln={setPilihanBln}
+                pilihanThn={pilihanThn}
+                setPilihanThn={setPilihanThn}
+                handlePrint={handleCetak}
+              />
+
+
+              {/* TABEL TRANSAKSI */}
+              <div style={{ ...styles.whiteCard, padding: '20px' }}>
+
+                <div style={styles.tableResponsive}>
+                  {/* DAFTAR TRANSAKSI */}
+                  <TransactionTable
+                    pengeluaran={pengeluaran}
+                    dailySummaries={dailySummaries}
+                    totalPemasukanAktif={totalPemasukanAktif}
+                    totalPengeluaranAktif={totalPengeluaranAktif}
+                    handleEditClick={handleEditClick}
+                    handleDeleteTransaction={handleDeleteTransaction}
+                  />
+                </div>
+              </div>
+
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <LobbyView
-      toggleThemeButton={toggleThemeButton}
-      totals={totals}
-      handleJoin={handleJoin}
-      kodeDompet={kodeDompet}
-      setKodeDompet={setKodeDompet}
-      setIsHistory={setIsHistory}
-      daftarDompet={daftarDompet}
-      setIsJoined={setIsJoined}
-      appMode={appMode}
-      onChooseLogin={onChooseLogin}
-    />
+    <>
+      {mainContent}
+      {/* Footer / Version Marker (Global) */}
+      {!printData && (
+        <div style={{ textAlign: 'center', padding: '20px', color: colors.textMuted, fontSize: '0.8rem', opacity: 0.6 }}>
+          Do-Wa-llets v1.1 - Validated System
+        </div>
+      )}
+      {showGuide && <GuideView onClose={() => setShowGuide(false)} />}
+    </>
   );
 }
 
-// TAMPILAN 2: HALAMAN PENCATATAN DOMPET (Sama seperti sebelumnya, diselaraskan palet warnanya)
-return (
-  <div style={styles.bodyWrapper}>
-    <div style={styles.fullContainer} className="mobile-p-10">
-      <WalletHeader
-        isAnalyzing={isAnalyzing}
-        setIsAnalyzing={setIsAnalyzing}
-        kodeDompet={kodeDompet}
-        handleEditWalletName={handleEditWalletName}
-        setIsJoined={setIsJoined}
-        setPengeluaran={setPengeluaran}
-        fetchDaftarDompet={fetchDaftarDompet}
-        handleDeleteWallet={handleDeleteWallet}
-        toggleThemeButton={toggleThemeButton}
-      />
-
-      {/* METRICS DASHBOARD */}
-      <WalletDashboard
-        inputModal={inputModal}
-        setInputModal={setInputModal}
-        handleSetModal={handleSetModal}
-        keuangan={keuangan}
-        sisaUangAktif={sisaUangAktif}
-      />
-
-      {/* HALAMAN ANALISIS GRAFIK */}
-      {isAnalyzing && (
-        <AnalyticsView
-          setIsAnalyzing={setIsAnalyzing}
-          totalPengeluaranAktif={totalPengeluaranAktif}
-          pengeluaran={pengeluaran}
-          getTrendData={getTrendData}
-        />
-      )}
-
-      {/* SEMBUNYIKAN FORM & TABEL JIKA SEDANG ANALISIS */}
-      {!isAnalyzing && (
-        <>
-          {/* FORM INPUT */}
-          <TransactionForm
-            handleSubmit={handleSubmit}
-            form={form}
-            setForm={setForm}
-            loading={loading}
-            isEditing={isEditing}
-            handleCancelEdit={handleCancelEdit}
-          />
-
-          <ReportFilters
-            filterCetak={filterCetak}
-            setFilterCetak={setFilterCetak}
-            pilihanTgl={pilihanTgl}
-            setPilihanTgl={setPilihanTgl}
-            pilihanBln={pilihanBln}
-            setPilihanBln={setPilihanBln}
-            pilihanThn={pilihanThn}
-            setPilihanThn={setPilihanThn}
-            handlePrint={handleCetak}
-          />
-
-
-          {/* TABEL TRANSAKSI */}
-          <div style={{ ...styles.whiteCard, padding: '20px' }}>
-
-            <div style={styles.tableResponsive}>
-              {/* DAFTAR TRANSAKSI */}
-              <TransactionTable
-                pengeluaran={pengeluaran}
-                dailySummaries={dailySummaries}
-                totalPemasukanAktif={totalPemasukanAktif}
-                totalPengeluaranAktif={totalPengeluaranAktif}
-                handleEditClick={handleEditClick}
-                handleDeleteTransaction={handleDeleteTransaction}
-              />
-            </div>
-          </div>
-
-        </>
-      )}
-    </div>
-    {/* Footer / Version Marker */}
-    <div style={{ textAlign: 'center', padding: '20px', color: colors.textMuted, fontSize: '0.8rem', opacity: 0.6 }}>
-      Do-Wa-llets v1.1 - Validated System
-    </div>
-    {showGuide && <GuideView onClose={() => setShowGuide(false)} />}
-  </div>
-);
-}
 
 
 
