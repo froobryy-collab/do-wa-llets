@@ -22,6 +22,7 @@ import ReportFilters from "./components/ReportFilters";
 import AuthView from "./components/AuthView";
 import WelcomeView from "./components/WelcomeView";
 import GuideView from "./components/GuideView";
+import LandingView from "./components/LandingView";
 
 
 // 🎨 PALET WARNA BRANKAS PUSAT (Sekarang Dinamis)
@@ -39,9 +40,17 @@ export default function App() {
   };
 
 
+  // Platform Detection
+  const isWindows = !!(typeof window !== 'undefined' && window.process && window.process.type);
+  const isAndroid = !!(typeof window !== 'undefined' && window.Capacitor);
+  const isWebApp = !isWindows && !isAndroid;
+
   // Auth & Navigation State
   const [session, setSession] = useState(null);
-  const [appMode, setAppMode] = useState("welcome"); // welcome | guest | member
+  const [appMode, setAppMode] = useState(() => {
+    // Jika di Web, mulai dari landing. Jika di App, mulai dari welcome.
+    return isWebApp ? "landing" : "welcome";
+  });
   const [showGuide, setShowGuide] = useState(false);
 
   useEffect(() => {
@@ -699,14 +708,22 @@ if (printData) {
   );
 }
 
-// 1. WELCOME SCREEN
+// 1. LANDING PAGE (Web Only)
+if (appMode === "landing") {
+  return <LandingView onEnterApp={() => setAppMode("welcome")} />;
+}
+
+// 2. WELCOME SCREEN
 if (appMode === "welcome" && !session) {
   return <WelcomeView onChooseGuest={onChooseGuest} onChooseLogin={onChooseLogin} />;
 }
 
-// 2. AUTH VIEW (LOGIN SCREEN)
+// 3. AUTH VIEW (LOGIN SCREEN)
 if (appMode === "auth" && !session) {
-  return <AuthView setSession={setSession} onBack={() => setAppMode("welcome")} />;
+  return <AuthView setSession={setSession} onBack={() => {
+    if (isWebApp) setAppMode("landing");
+    else setAppMode("welcome");
+  }} />;
 }
 
 // 3. MAIN APP (GUEST OR MEMBER)
