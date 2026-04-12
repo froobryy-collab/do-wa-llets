@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 // Import alat grafik dan ikon
 import { ResponsiveContainer } from 'recharts';
-import { ArrowLeft, PieChart as ChartIcon, List as ListIcon, Sun, Moon, TrendingUp, LogOut, HelpCircle, Download } from 'lucide-react';
+import { ArrowLeft, PieChart as ChartIcon, List as ListIcon, Sun, Moon, TrendingUp, LogOut, HelpCircle } from 'lucide-react';
 
 
 // Import tema & gaya
@@ -40,17 +40,9 @@ export default function App() {
   };
 
 
-  // Platform Detection
-  const isWindows = !!(typeof window !== 'undefined' && window.process && window.process.type);
-  const isAndroid = !!(typeof window !== 'undefined' && window.Capacitor);
-  const isWebApp = !isWindows && !isAndroid;
-
   // Auth & Navigation State
   const [session, setSession] = useState(null);
-  const [appMode, setAppMode] = useState(() => {
-    // Jika di Web, mulai dari landing. Jika di App, mulai dari welcome.
-    return isWebApp ? "landing" : "welcome";
-  });
+  const [appMode, setAppMode] = useState("landing"); 
   const [showGuide, setShowGuide] = useState(false);
 
   useEffect(() => {
@@ -128,15 +120,6 @@ export default function App() {
       >
         {isDarkMode ? <Sun size={18} color={colors.warning} /> : <Moon size={18} color={colors.blue} />}
       </button>
-      <a
-        href="https://github.com/froobryy-collab/do-wa-llets/releases"
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{ ...styles.btnSecondary, display: 'flex', alignItems: 'center', gap: '8px', padding: '10px', textDecoration: 'none' }}
-        title="Download App (Windows/Android)"
-      >
-        <Download size={18} color={colors.success} />
-      </a>
       {appMode === 'member' && session && (
         <button
           onClick={() => supabase.auth.signOut()}
@@ -720,10 +703,7 @@ if (appMode === "welcome" && !session) {
 
 // 3. AUTH VIEW (LOGIN SCREEN)
 if (appMode === "auth" && !session) {
-  return <AuthView setSession={setSession} onBack={() => {
-    if (isWebApp) setAppMode("landing");
-    else setAppMode("welcome");
-  }} />;
+  return <AuthView setSession={setSession} onBack={() => setAppMode("landing")} />;
 }
 
 // 3. MAIN APP (GUEST OR MEMBER)

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Download, Smartphone, Laptop, Mail, MessageSquare, ShieldCheck, Zap, Globe } from 'lucide-react';
+import { Mail, MessageSquare, ShieldCheck, Zap, Globe } from 'lucide-react';
 import { colors, styles } from '../constants/theme';
 
 export default function LandingView({ onEnterApp }) {
@@ -46,34 +46,6 @@ export default function LandingView({ onEnterApp }) {
     </div>
   );
 
-  const downloadCard = (icon, title, platform, link) => (
-    <a href={link} target="_blank" rel="noopener noreferrer" style={{
-      textDecoration: 'none',
-      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-      padding: '30px',
-      borderRadius: '20px',
-      border: `2px solid ${colors.blue}`,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      gap: '16px',
-      transition: 'transform 0.2s',
-      color: '#fff'
-    }} className="hover:scale-105">
-      {icon}
-      <div style={{ textAlign: 'center' }}>
-        <h3 style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>{title}</h3>
-        <p style={{ color: '#cbd5e1', fontSize: '0.85rem' }}>{platform}</p>
-      </div>
-      <div style={{ 
-        backgroundColor: colors.blue, 
-        padding: '8px 20px', 
-        borderRadius: '50px',
-        fontWeight: '600',
-        fontSize: '0.9rem'
-      }}>Download</div>
-    </a>
-  );
 
   return (
     <div style={containerStyle}>
@@ -104,16 +76,10 @@ export default function LandingView({ onEnterApp }) {
       {/* Features */}
       <div style={cardContainerStyle}>
         {featureCard(<Zap size={24} />, "Cepat & Ringan", "Akses instan ke data keuangan Anda tanpa loading lama.")}
-        {featureCard(<Globe size={24} />, "Multi-Device", "Sinkronisasi otomatis antara Browser, Android, dan Windows.")}
+        {featureCard(<Globe size={24} />, "Akses di Mana Saja", "Buka lewat Browser di HP, Tablet, atau Laptop tanpa perlu instal.")}
         {featureCard(<MessageSquare size={24} />, "Saran & Masukan", "Kirim saran langsung ke pengembang untuk fitur yang lebih baik.")}
       </div>
 
-      {/* Download Section */}
-      <h2 style={{ fontSize: '2rem', fontWeight: '700', marginBottom: '30px' }}>Dapatkan Aplikasi Native</h2>
-      <div style={{ ...cardContainerStyle, gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', maxWidth: '600px' }}>
-        {downloadCard(<Smartphone size={40} color={colors.success} />, "Android App", "Versi APK Terbaru", "https://github.com/froobryy-collab/do-wa-llets/releases/download/v1.0.0/Do-Wa-llets-Android.apk")}
-        {downloadCard(<Laptop size={40} color={colors.blue} />, "Windows App", "Versi Desktop .exe", "https://github.com/froobryy-collab/do-wa-llets/releases/download/v1.0.0/Do-Wa-llets-Windows-Setup.exe")}
-      </div>
 
       {/* Footer / Contact */}
       <div style={{ marginTop: 'auto', textAlign: 'center', padding: '40px 0', borderTop: '1px solid rgba(255, 255, 255, 0.1)', width: '100%', maxWidth: '800px' }}>

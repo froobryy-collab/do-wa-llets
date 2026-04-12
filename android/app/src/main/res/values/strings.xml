@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">Do-Wa-llets</string>
-    <string name="title_activity_main">Do-Wa-llets</string>
-    <string name="package_name">com.dowallets.app</string>
-    <string name="custom_url_scheme">com.dowallets.app</string>
-</resources>
