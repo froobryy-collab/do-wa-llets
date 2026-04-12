@@ -1,0 +1,195 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap');
+
+:root {
+  /* MODE TERANG (Lampu Nyala) */
+  --bg: #F8FAFC;
+  --card: #FFFFFF;
+  --card-success: linear-gradient(to right, #FFFFFF 40%, #ECFDF5);
+  --card-danger: linear-gradient(to right, #FFFFFF 40%, #FEF2F2);
+  --title-gradient: linear-gradient(to bottom, #0F172A, #334155);
+  --text-main: #0F172A;
+
+  --text-muted: #64748B;
+  --border: #E2E8F0;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --day-header-bg: #E2E8F0;
+  --day-header-text: #0F172A;
+  --th-bg: #1E293B;
+  /* Navy Gelap */
+  --th-text: #FFFFFF;
+  /* Teks Putih agar kontras */
+
+
+
+}
+
+/* MODE GELAP (Lampu Mati) */
+body.dark-mode {
+  --bg: #0F172A;
+  --card: #1E293B;
+  --card-success: linear-gradient(to right, #1E293B 40%, #064E3B);
+  --card-danger: linear-gradient(to right, #1E293B 40%, #450A0A);
+  --title-gradient: linear-gradient(to bottom, #FFFFFF, #CBD5E1);
+  --text-main: #F8FAFC;
+
+  --text-muted: #94A3B8;
+  --border: #1E293B;
+  --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+
+  --day-header-bg: #1E293B;
+  /* Navy Blue - Distinct from Background */
+  --day-header-text: #F8FAFC;
+  --th-bg: #172554;
+  /* Biru Navy yang sangat pekat */
+  --th-text: #F8FAFC;
+
+
+
+}
+
+
+
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg);
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  display: block;
+  box-sizing: border-box;
+}
+
+h1,
+h2 {
+  font-family: var(--heading);
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+h1 {
+  font-size: 56px;
+  letter-spacing: -1.68px;
+  margin: 32px 0;
+
+  @media (max-width: 1024px) {
+    font-size: 36px;
+    margin: 20px 0;
+  }
+}
+
+h2 {
+  font-size: 24px;
+  line-height: 118%;
+  letter-spacing: -0.24px;
+  margin: 0 0 8px;
+
+  @media (max-width: 1024px) {
+    font-size: 20px;
+  }
+}
+
+p {
+  margin: 0;
+}
+
+code,
+.counter {
+  font-family: var(--mono);
+  display: inline-flex;
+  border-radius: 4px;
+  color: var(--text-h);
+}
+
+code {
+  font-size: 15px;
+  line-height: 135%;
+  padding: 4px 8px;
+  background: var(--code-bg);
+}
+
+/* --- MOBILE RESPONSIVE TWEAKS --- */
+@media (max-width: 768px) {
+  body {
+    padding: 0;
+  }
+  
+  .mobile-p-10 {
+    padding: 10px 15px !important;
+  }
+
+  .mobile-stack {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .mobile-grid-1 {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
+  .mobile-grid-2 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .mobile-hide {
+    display: none !important;
+  }
+
+  .mobile-full-width {
+    width: 100% !important;
+    min-width: 0 !important;
+    justify-content: center !important;
+  }
+
+  .mobile-text-center {
+    text-align: center !important;
+  }
+
+  h1 {
+    font-size: 1.8rem !important;
+    letter-spacing: -1px;
+  }
+
+  h2 {
+    font-size: 1.3rem !important;
+  }
+
+  .card-number {
+    font-size: 1.5rem !important;
+  }
+  
+  input, button {
+    font-size: 1rem !important; /* Mencegah auto-zoom di iOS safari saat fokus */
+  }
+}
+
+/* Smooth fade-in for components */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* HIDE ELEMENTS DURING PRINT */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background-color: white !important;
+  }
+}

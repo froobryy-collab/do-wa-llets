@@ -1,0 +1,66 @@
+name: Build Desktop and Mobile Apps
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    permissions:
+      contents: write
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Web App
+        run: npm run build
+
+      - name: Build Electron (Windows)
+        run: npm run electron:build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Build Android APK
+        run: |
+          npx cap sync
+          cd android
+          powershell -Command "./gradlew assembleDebug"
+        shell: bash
+
+      - name: Rename APK for clarity
+        run: |
+          mv android/app/build/outputs/apk/debug/app-debug.apk ./Do-Wa-llets-Android.apk
+          mv dist_electron/*.exe ./Do-Wa-llets-Windows-Setup.exe || true
+        shell: bash
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.run_number }}
+          name: Build v${{ github.run_number }}
+          body: "Automated build of Do-Wa-llets for Windows and Android."
+          draft: false
+          prerelease: false
+          files: |
+            ./Do-Wa-llets-Android.apk
+            ./Do-Wa-llets-Windows-Setup.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

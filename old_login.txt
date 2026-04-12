@@ -1,0 +1,151 @@
+﻿
+          handleSpecialClaim(session.user);
+        }
+      });
+  
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        setSession(session);
+        if (session) {
+          setAppMode("member");
+          handleSpecialClaim(session.user);
+        } else {
+          setAppMode("welcome");
+        }
+      });
+  
+      return () => subscription.unsubscribe();
+    }, []);
+  
+    // FITUR KLAIM SPESIAL FOR frodowawa
+    const handleSpecialClaim = async (user) => {
+      const specialUsername = "frodowawa@app.com";
+      if (user.email === specialUsername) {
+        // Klaim dompet lama yang belum ada pemiliknya (antisipasi casing)
+        const targets = ["dompetfrodo", "dompetwawa", "DOMPETFRODO", "DOMPETWAWA"];
+        await supabase.from("pengeluaran").update({ user_id: user.id }).in("kode_grup", targets).is("user_id", null);
+        await supabase.from("tabungan").update({ user_id: user.id }).in("kode_grup", targets).is("user_id", null);
+        fetchDaftarDompet();
+      }
+    };
+  
+    const onChooseGuest = () => setAppMode("guest");
+>   const onChooseLogin = () => setAppMode("auth");
+  
+    // --- NATIVE MOBILE OPTIMIZATION ---
+  
+    // 1. Penanganan Tombol Back Hardware
+    useEffect(() => {
+      if (!CapApp) return;
+  
+      const backListener = CapApp.addListener('backButton', ({ canGoBack }) => {
+        if (isHistory) {
+          setIsHistory(false);
+        } else if (isAnalyzing) {
+          setIsAnalyzing(false);
+        } else if (isJoined) {
+          setIsJoined(false);
+        } else if (appMode === "auth") {
+          setAppMode("welcome");
+        } else if (appMode === "guest" || appMode === "member") {
+          // Jika di Lobby, tanyakan konfirmasi keluar
+          if (window.confirm("Keluar dari aplikasi?")) {
+            CapApp.exitApp();
+          }
+        }
+      });
+  
+      return () => {
+        backListener.then(l => l.remove());
+      };
+    }, [isJoined, isHistory, isAnalyzing, appMode]);
+  
+    // 2. Sinkronisasi Warna Status Bar (Akses Native)
+                  <td style="color: #3B82F6;">Rp ${tlnSaved.toLocaleString("id-ID")}</td>
+                </tr>
+                <tr style="background-color: #f1f5f9; font-size: 1.1em;">
+                  <td colspan="3" style="text-align: right;">SALDO AKHIR PERIODE:</td>
+                  <td>Rp ${(tlnPemasukan - tlnPengeluaran - tlnSaved).toLocaleString("id-ID")}</td>
+                </tr>
+              </tfoot>
+  
+            </table>
+            <script>window.print();</script>
+  
+          </body>
+        </html>
+      `);
+      cetakWindow.document.close();
+    };
+  
+    const totalPemasukanAktif = pengeluaran
+  
+      .filter(item => item.jenis === "pemasukan")
+      .reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
+    const totalPengeluaranAktif = pengeluaran
+      .filter(item => item.jenis === "pengeluaran" || item.jenis === "tarik_tabungan")
+      .reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
+    const sisaUangAktif = keuangan.modal_awal + totalPemasukanAktif - totalPengeluaranAktif;
+  
+    // --- RENDERING VIEWS (STATE MACHINE) ---
+    
+    // 1. WELCOME SCREEN
+    if (appMode === "welcome" && !session) {
+>     return <WelcomeView onChooseGuest={onChooseGuest} onChooseLogin={onChooseLogin} />;
+    }
+  
+>   // 2. AUTH VIEW (LOGIN SCREEN)
+    if (appMode === "auth" && !session) {
+      return <AuthView setSession={setSession} onBack={() => setAppMode("welcome")} />;
+    }
+  
+    // 3. MAIN APP (GUEST OR MEMBER)
+    
+    // TAMPILAN 0.1: HALAMAN RIWAYAT
+    if (isHistory) return <HistoryView setIsHistory={setIsHistory} riwayatData={riwayatData} totals={totals} />;
+  
+    // TAMPILAN 1: BRANKAS PUSAT (LOBBY BARU)
+    if (!isJoined) {
+      return (
+        <LobbyView
+          toggleThemeButton={toggleThemeButton}
+          totals={totals}
+          handleJoin={handleJoin}
+          kodeDompet={kodeDompet}
+          setKodeDompet={setKodeDompet}
+          setIsHistory={setIsHistory}
+          daftarDompet={daftarDompet}
+          setIsJoined={setIsJoined}
+          appMode={appMode}
+>         onChooseLogin={onChooseLogin}
+        />
+      );
+    }
+  
+    // TAMPILAN 2: HALAMAN PENCATATAN DOMPET (Sama seperti sebelumnya, diselaraskan palet warnanya)
+    return (
+      <div style={styles.bodyWrapper}>
+        <div style={styles.fullContainer} className="mobile-p-10">
+          <WalletHeader
+            isAnalyzing={isAnalyzing}
+            setIsAnalyzing={setIsAnalyzing}
+            kodeDompet={kodeDompet}
+            handleEditWalletName={handleEditWalletName}
+            setIsJoined={setIsJoined}
+            setPengeluaran={setPengeluaran}
+            fetchDaftarDompet={fetchDaftarDompet}
+            handleDeleteWallet={handleDeleteWallet}
+            toggleThemeButton={toggleThemeButton}
+          />
+  
+          {/* METRICS DASHBOARD */}
+          <WalletDashboard
+            inputModal={inputModal}
+            setInputModal={setInputModal}
+            handleSetModal={handleSetModal}
+            keuangan={keuangan}
+            sisaUangAktif={sisaUangAktif}
+          />
+  
+          {/* HALAMAN ANALISIS GRAFIK */}
+
+

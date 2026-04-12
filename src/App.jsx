@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "./supabase";
 // Import alat grafik dan ikon
 import { ResponsiveContainer } from 'recharts';
-import { ArrowLeft, PieChart as ChartIcon, List as ListIcon, Sun, Moon, TrendingUp, LogOut, HelpCircle } from 'lucide-react';
+import { ArrowLeft, PieChart as ChartIcon, List as ListIcon, Sun, Moon, TrendingUp, LogOut, HelpCircle, Download } from 'lucide-react';
 
 
 // Import tema & gaya
@@ -119,6 +119,15 @@ export default function App() {
       >
         {isDarkMode ? <Sun size={18} color={colors.warning} /> : <Moon size={18} color={colors.blue} />}
       </button>
+      <a
+        href="https://github.com/froobryy-collab/do-wa-llets/releases"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{ ...styles.btnSecondary, display: 'flex', alignItems: 'center', gap: '8px', padding: '10px', textDecoration: 'none' }}
+        title="Download App (Windows/Android)"
+      >
+        <Download size={18} color={colors.success} />
+      </a>
       {appMode === 'member' && session && (
         <button
           onClick={() => supabase.auth.signOut()}
