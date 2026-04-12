@@ -10,19 +10,27 @@ function createWindow() {
     width: 1280,
     height: 800,
     title: "Do-Wa-llets",
+    show: false, // Jangan tampilkan jendela sebelum siap
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js'), // Opsional, jika nanti butuh
     }
   });
 
   // Jika dalam mode produksi, muat file dari folder dist
   // Jika dalam mode pengembangan, muat dari localhost vite
   if (app.isPackaged) {
-    win.loadFile(path.join(__dirname, '../dist/index.html'));
+    const indexPath = path.join(__dirname, '../dist/index.html');
+    win.loadFile(indexPath).catch(err => console.error("Gagal memuat index.html:", err));
   } else {
     win.loadURL('http://localhost:5173');
+    // win.webContents.openDevTools(); // Aktifkan di dev mode jika perlu
   }
+
+  win.once('ready-to-show', () => {
+    win.show();
+  });
 }
 
 app.whenReady().then(createWindow);
