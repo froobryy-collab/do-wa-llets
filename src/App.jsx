@@ -56,26 +56,31 @@ export default function App() {
 
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session);
-      if (session) {
-        setIsSyncing(true);
-        setAppMode("member");
-        await handleSpecialClaim(session.user);
-        setIsSyncing(false);
-      }
-    });
+    let isInitialized = false;
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setSession(session);
-      if (session) {
+    const initializeAuth = async (currSession) => {
+      if (isInitialized) return;
+      isInitialized = true;
+      
+      setSession(currSession);
+      if (currSession) {
         setIsSyncing(true);
         setAppMode("member");
-        await handleSpecialClaim(session.user);
+        await handleSpecialClaim(currSession.user);
         setIsSyncing(false);
       } else {
         setAppMode("welcome");
       }
+    };
+
+    // 1. Ambil sesi saat ini secara instan
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) initializeAuth(session);
+    });
+
+    // 2. Pantau perubahan auth (Login/Logout)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      initializeAuth(session);
     });
 
     return () => subscription.unsubscribe();
@@ -85,16 +90,23 @@ export default function App() {
   const handleSpecialClaim = async (user) => {
     const specialUsername = "frodowawa@app.com";
     if (user && user.email && user.email.toLowerCase() === specialUsername.toLowerCase()) {
-      console.log("🛠️ [SYNC-START] Memulai Klaim Agresif untuk:", user.email);
+      console.log("🛠️ [SYNC-START] Memulai Klaim Presisi untuk:", user.email);
       
       const targets = ["dompetfrodo", "dompetwawa", "DOMPETFRODO", "DOMPETWAWA"];
       
-      // Update data secara berurutan dan pastikan selesai
-      await supabase.from("pengeluaran").update({ user_id: user.id }).in("kode_grup", targets);
-      await supabase.from("tabungan").update({ user_id: user.id }).in("kode_grup", targets);
+      // HANYA KLAIM DATA YANG BELUM PUNYA PEMILIK (.is("user_id", null))
+      // Ini mencegah data "DEMO/TAMU" (Rp 25.000) terambil ke akun member.
+      await supabase.from("pengeluaran")
+        .update({ user_id: user.id })
+        .in("kode_grup", targets)
+        .is("user_id", null);
+        
+      await supabase.from("tabungan")
+        .update({ user_id: user.id })
+        .in("kode_grup", targets)
+        .is("user_id", null);
       
-      console.log("✅ [SYNC-DONE] Data telah di-reassign ke ID user saat ini.");
-      // Jangan langsung panggil fetchDaftarDompet di sini agar tidak balapan dengan useEffect utama
+      console.log("✅ [SYNC-DONE] Sinkronisasi presisi selesai.");
     } else if (user) {
       console.log("ℹ️ User Login:", user.email);
     }
