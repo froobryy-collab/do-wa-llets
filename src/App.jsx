@@ -44,6 +44,7 @@ export default function App() {
   const [session, setSession] = useState(null);
   const [appMode, setAppMode] = useState("landing"); 
   const [showGuide, setShowGuide] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false); // State baru untuk pengamanan data
 
   useEffect(() => {
     const hasSeenGuide = localStorage.getItem("hasSeenGuide");
@@ -55,19 +56,23 @@ export default function App() {
 
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       if (session) {
+        setIsSyncing(true);
         setAppMode("member");
-        handleSpecialClaim(session.user);
+        await handleSpecialClaim(session.user);
+        setIsSyncing(false);
       }
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       if (session) {
+        setIsSyncing(true);
         setAppMode("member");
-        handleSpecialClaim(session.user);
+        await handleSpecialClaim(session.user);
+        setIsSyncing(false);
       } else {
         setAppMode("welcome");
       }
@@ -80,19 +85,17 @@ export default function App() {
   const handleSpecialClaim = async (user) => {
     const specialUsername = "frodowawa@app.com";
     if (user && user.email && user.email.toLowerCase() === specialUsername.toLowerCase()) {
-      console.log("🛠️ [SYNC] Memulai Klaim Agresif untuk:", user.email, "ID:", user.id);
+      console.log("🛠️ [SYNC-START] Memulai Klaim Agresif untuk:", user.email);
       
       const targets = ["dompetfrodo", "dompetwawa", "DOMPETFRODO", "DOMPETWAWA"];
       
-      // Update tanpa .is("user_id", null) - Timpa saja dengan ID terbaru agar sinkron
-      const res1 = await supabase.from("pengeluaran").update({ user_id: user.id }).in("kode_grup", targets);
-      const res2 = await supabase.from("tabungan").update({ user_id: user.id }).in("kode_grup", targets);
+      // Update data secara berurutan dan pastikan selesai
+      await supabase.from("pengeluaran").update({ user_id: user.id }).in("kode_grup", targets);
+      await supabase.from("tabungan").update({ user_id: user.id }).in("kode_grup", targets);
       
-      console.log("✅ Hasil Klaim Pengeluaran:", res1);
-      console.log("✅ Hasil Klaim Tabungan:", res2);
-      
-      fetchDaftarDompet();
-    } else {
+      console.log("✅ [SYNC-DONE] Data telah di-reassign ke ID user saat ini.");
+      // Jangan langsung panggil fetchDaftarDompet di sini agar tidak balapan dengan useEffect utama
+    } else if (user) {
       console.log("ℹ️ User Login:", user.email);
     }
   };
@@ -457,16 +460,16 @@ const fetchData = async () => {
 };
 
 useEffect(() => {
+  // Hanya tarik data jika:
+  // 1. Sedang dalam mode tamu
+  // 2. ATAU sedang dalam mode member, session ada, dan proses SYNCING (klaim) sudah SELESAI
   if (appMode === "guest") {
     fetchDaftarDompet();
-  } else if (appMode === "member" && session) {
-    // Beri jeda sangat singkat agar update database (jika ada klaim) sudah masuk ke cache server
-    const timer = setTimeout(() => {
-      fetchDaftarDompet();
-    }, 200); 
-    return () => clearTimeout(timer);
+  } else if (appMode === "member" && session && !isSyncing) {
+    console.log("🚀 [FETCH] Menarik data final setelah sinkronisasi selesai.");
+    fetchDaftarDompet();
   }
-}, [appMode, session]);
+}, [appMode, session, isSyncing]);
 
 useEffect(() => {
   if (isJoined) {
