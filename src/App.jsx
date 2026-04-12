@@ -80,11 +80,20 @@ export default function App() {
   const handleSpecialClaim = async (user) => {
     const specialUsername = "frodowawa@app.com";
     if (user.email === specialUsername) {
-      // Klaim dompet lama yang belum ada pemiliknya (antisipasi casing)
+      console.log("🛠️ Memulai Klaim Agresif untuk:", user.email, "ID:", user.id);
+      
       const targets = ["dompetfrodo", "dompetwawa", "DOMPETFRODO", "DOMPETWAWA"];
-      await supabase.from("pengeluaran").update({ user_id: user.id }).in("kode_grup", targets).is("user_id", null);
-      await supabase.from("tabungan").update({ user_id: user.id }).in("kode_grup", targets).is("user_id", null);
+      
+      // Update tanpa .is("user_id", null) - Timpa saja dengan ID terbaru agar sinkron
+      const res1 = await supabase.from("pengeluaran").update({ user_id: user.id }).in("kode_grup", targets);
+      const res2 = await supabase.from("tabungan").update({ user_id: user.id }).in("kode_grup", targets);
+      
+      console.log("✅ Hasil Klaim Pengeluaran:", res1);
+      console.log("✅ Hasil Klaim Tabungan:", res2);
+      
       fetchDaftarDompet();
+    } else {
+      console.log("ℹ️ User Login:", user.email);
     }
   };
 
