@@ -463,7 +463,7 @@ useEffect(() => {
     // Beri jeda sangat singkat agar update database (jika ada klaim) sudah masuk ke cache server
     const timer = setTimeout(() => {
       fetchDaftarDompet();
-    }, 500); 
+    }, 200); 
     return () => clearTimeout(timer);
   }
 }, [appMode, session]);
