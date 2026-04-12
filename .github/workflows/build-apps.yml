@@ -42,13 +42,15 @@ jobs:
         run: |
           npx cap sync
           cd android
-          ./gradlew.bat assembleDebug
-        shell: cmd
+          ./gradlew assembleDebug
+        shell: bash
 
       - name: Rename APK for clarity
         run: |
-          find android/app/build/outputs/apk/debug -name "*.apk" -exec mv {} ./Do-Wa-llets-Android.apk \;
+          find android -name "*.apk" -exec mv {} ./Do-Wa-llets-Android.apk \;
           find dist_electron -name "*.exe" -exec mv {} ./Do-Wa-llets-Windows-Setup.exe \; || true
+          ls -lh ./Do-Wa-llets-Android.apk || echo "APK not found"
+          ls -lh ./Do-Wa-llets-Windows-Setup.exe || echo "EXE not found"
         shell: bash
 
       - name: Create Release
