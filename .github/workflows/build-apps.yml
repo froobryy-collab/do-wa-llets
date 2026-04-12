@@ -47,8 +47,8 @@ jobs:
 
       - name: Rename APK for clarity
         run: |
-          mv android/app/build/outputs/apk/debug/app-debug.apk ./Do-Wa-llets-Android.apk
-          mv dist_electron/*.exe ./Do-Wa-llets-Windows-Setup.exe || true
+          find android/app/build/outputs/apk/debug -name "*.apk" -exec mv {} ./Do-Wa-llets-Android.apk \;
+          find dist_electron -name "*.exe" -exec mv {} ./Do-Wa-llets-Windows-Setup.exe \; || true
         shell: bash
 
       - name: Create Release
