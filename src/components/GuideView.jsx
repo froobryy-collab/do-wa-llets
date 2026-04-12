@@ -91,36 +91,63 @@ const GuideView = ({ onClose }) => {
           <p style={{ color: colors.textMuted, fontSize: '1.1rem' }}>Selamat datang! Yuk pelajari fitur lengkap aplikasi ini agar pengelolaan keuanganmu makin maksimal.</p>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
           {guideSteps.map((step, index) => (
             <div key={index} style={{ 
               display: 'flex', 
-              gap: '20px', 
-              padding: '20px', 
-              borderRadius: '20px', 
-              background: 'var(--day-header-bg)',
-              border: `1px solid ${colors.border}`
+              gap: '24px', 
+              padding: '28px', 
+              borderRadius: '24px', 
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: `1.5px solid ${colors.border}`,
+              backdropFilter: 'blur(5px)',
+              transition: 'transform 0.3s ease',
+              boxShadow: '0 8px 30px rgba(0,0,0,0.1)'
             }}>
               <div style={{ 
-                minWidth: '50px', 
-                height: '50px', 
-                borderRadius: '15px', 
-                background: colors.card, 
+                minWidth: '56px', 
+                height: '56px', 
+                borderRadius: '16px', 
+                background: 'rgba(255, 255, 255, 0.05)', 
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'center',
-                boxShadow: '0 4px 10px rgba(0,0,0,0.05)'
+                boxShadow: `0 0 20px ${colors.blue}22`
               }}>
                 {step.icon}
               </div>
               <div style={{ flex: 1 }}>
-                <h3 style={{ margin: '0 0 10px 0', fontSize: '1.2rem', fontWeight: '700' }}>{step.title}</h3>
-                <p style={{ fontSize: '0.95rem', color: colors.textMuted, lineHeight: '1.5', marginBottom: '15px' }}>{step.description}</p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <h3 style={{ 
+                  margin: '0 0 12px 0', 
+                  fontSize: '1.3rem', 
+                  fontWeight: '800', 
+                  color: '#fff',
+                  letterSpacing: '-0.01em'
+                }}>{step.title}</h3>
+                <p style={{ 
+                  fontSize: '1rem', 
+                  color: '#cbd5e1', 
+                  lineHeight: '1.6', 
+                  marginBottom: '20px' 
+                }}>{step.description}</p>
+                
+                {/* Background Text Points */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {step.details.map((detail, idx) => (
-                    <div key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '0.9rem' }}>
-                      <CheckCircle size={14} color={colors.success} style={{ marginTop: '3px' }} />
-                      <span>{detail}</span>
+                    <div key={idx} style={{ 
+                      display: 'flex', 
+                      alignItems: 'flex-start', 
+                      gap: '12px', 
+                      fontSize: '0.92rem',
+                      background: 'rgba(255, 255, 255, 0.02)',
+                      padding: '10px 14px',
+                      borderRadius: '10px',
+                      border: '1px solid rgba(255, 255, 255, 0.05)'
+                    }}>
+                      <div style={{ marginTop: '4px' }}>
+                        <CheckCircle size={14} color={colors.success} />
+                      </div>
+                      <span style={{ color: '#e2e8f0', lineHeight: '1.4' }}>{detail}</span>
                     </div>
                   ))}
                 </div>

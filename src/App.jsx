@@ -79,8 +79,8 @@ export default function App() {
   // FITUR KLAIM SPESIAL FOR frodowawa
   const handleSpecialClaim = async (user) => {
     const specialUsername = "frodowawa@app.com";
-    if (user.email === specialUsername) {
-      console.log("🛠️ Memulai Klaim Agresif untuk:", user.email, "ID:", user.id);
+    if (user && user.email && user.email.toLowerCase() === specialUsername.toLowerCase()) {
+      console.log("🛠️ [SYNC] Memulai Klaim Agresif untuk:", user.email, "ID:", user.id);
       
       const targets = ["dompetfrodo", "dompetwawa", "DOMPETFRODO", "DOMPETWAWA"];
       
@@ -457,8 +457,14 @@ const fetchData = async () => {
 };
 
 useEffect(() => {
-  if (appMode === "guest" || (appMode === "member" && session)) {
+  if (appMode === "guest") {
     fetchDaftarDompet();
+  } else if (appMode === "member" && session) {
+    // Beri jeda sangat singkat agar update database (jika ada klaim) sudah masuk ke cache server
+    const timer = setTimeout(() => {
+      fetchDaftarDompet();
+    }, 500); 
+    return () => clearTimeout(timer);
   }
 }, [appMode, session]);
 
