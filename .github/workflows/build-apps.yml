@@ -18,7 +18,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
@@ -42,8 +42,8 @@ jobs:
         run: |
           npx cap sync
           cd android
-          powershell -Command "./gradlew assembleDebug"
-        shell: bash
+          ./gradlew.bat assembleDebug
+        shell: cmd
 
       - name: Rename APK for clarity
         run: |
