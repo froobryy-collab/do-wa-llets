@@ -11,8 +11,34 @@ const LobbyView = ({
   daftarDompet, 
   setIsJoined,
   appMode,
-  onChooseLogin
+  onChooseLogin,
+  isDataLoading
 }) => {
+  if (isDataLoading && daftarDompet.length === 0) {
+    return (
+      <div style={{ ...styles.bodyWrapper, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '80vh' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div className="loader" style={{ 
+            border: `4px solid ${colors.border}`, 
+            borderTop: `4px solid ${colors.blue}`, 
+            borderRadius: '50%', 
+            width: '40px', 
+            height: '40px', 
+            animation: 'spin 1s linear infinite',
+            margin: '0 auto 20px'
+          }}></div>
+          <p style={{ color: colors.textMuted, fontWeight: '600' }}>Memuat Data Keuangan...</p>
+          <style>{`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={styles.bodyWrapper}>
       <div style={styles.fullContainer} className="mobile-p-10">

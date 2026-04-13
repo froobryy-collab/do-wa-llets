@@ -56,12 +56,7 @@ export default function App() {
 
 
   useEffect(() => {
-    let isInitialized = false;
-
-    const initializeAuth = async (currSession) => {
-      if (isInitialized) return;
-      isInitialized = true;
-      
+    const handleAuthChange = async (currSession) => {
       setSession(currSession);
       if (currSession) {
         setIsSyncing(true);
@@ -70,17 +65,23 @@ export default function App() {
         setIsSyncing(false);
       } else {
         setAppMode("welcome");
+        // Reset data saat logout agar transisi bersih & cepat
+        setPengeluaran([]);
+        setDaftarDompet([]);
+        setRiwayatData([]);
+        setTotals({
+          modalTerdaftar: 0,
+          totalPemasukan: 0,
+          totalPengeluaran: 0,
+          tabunganTerkunci: 0
+        });
       }
     };
 
-    // 1. Ambil sesi saat ini secara instan
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) initializeAuth(session);
-    });
-
-    // 2. Pantau perubahan auth (Login/Logout)
+    // Pantau perubahan auth (Login/Logout)
+    // onAuthStateChange akan menangani sesi awal secara otomatis
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      initializeAuth(session);
+      handleAuthChange(session);
     });
 
     return () => subscription.unsubscribe();
@@ -94,19 +95,24 @@ export default function App() {
       
       const targets = ["dompetfrodo", "dompetwawa", "DOMPETFRODO", "DOMPETWAWA"];
       
-      // HANYA KLAIM DATA YANG BELUM PUNYA PEMILIK (.is("user_id", null))
-      // Ini mencegah data "DEMO/TAMU" (Rp 25.000) terambil ke akun member.
-      await supabase.from("pengeluaran")
-        .update({ user_id: user.id })
-        .in("kode_grup", targets)
-        .is("user_id", null);
-        
-      await supabase.from("tabungan")
-        .update({ user_id: user.id })
-        .in("kode_grup", targets)
-        .is("user_id", null);
+      // HANYA Jalankan jika diperlukan (pilih data tanpa owner)
+      const { data: check } = await supabase.from("pengeluaran").select("id").in("kode_grup", targets).is("user_id", null).limit(1);
       
-      console.log("✅ [SYNC-DONE] Sinkronisasi presisi selesai.");
+      if (check && check.length > 0) {
+        await Promise.all([
+          supabase.from("pengeluaran")
+            .update({ user_id: user.id })
+            .in("kode_grup", targets)
+            .is("user_id", null),
+          supabase.from("tabungan")
+            .update({ user_id: user.id })
+            .in("kode_grup", targets)
+            .is("user_id", null)
+        ]);
+        console.log("✅ [SYNC-DONE] Sinkronisasi presisi selesai.");
+      } else {
+        console.log("ℹ️ [SYNC-SKIP] Data sudah sinkron.");
+      }
     } else if (user) {
       console.log("ℹ️ User Login:", user.email);
     }
@@ -161,6 +167,7 @@ export default function App() {
 
   const [pengeluaran, setPengeluaran] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isDataLoading, setIsDataLoading] = useState(false); // New loading state for data fetching
   const [isEditing, setIsEditing] = useState(false);
   const [currentId, setCurrentId] = useState(null);
 
@@ -239,22 +246,22 @@ export default function App() {
   // --- LOGIKA ASLI ---
 
   const fetchDaftarDompet = async () => {
-    if (appMode === "welcome" || appMode === "auth") return;
+    if (appMode === "welcome" || appMode === "auth" || isDataLoading) return;
+    setIsDataLoading(true);
 
-    // Logika Filter Hybrid
-    let queryPengeluaran = supabase.from("pengeluaran").select("kode_grup, nominal, jenis, tanggal");
-    let queryTabungan = supabase.from("tabungan").select("*");
+    try {
+      // Logika Filter Hybrid
+      const [resPengeluaran, resTabungan] = await Promise.all([
+        (appMode === "member" && session) 
+          ? supabase.from("pengeluaran").select("kode_grup, nominal, jenis, tanggal").eq("user_id", session.user.id)
+          : supabase.from("pengeluaran").select("kode_grup, nominal, jenis, tanggal").is("user_id", null),
+        (appMode === "member" && session)
+          ? supabase.from("tabungan").select("*").eq("user_id", session.user.id)
+          : supabase.from("tabungan").select("*").is("user_id", null)
+      ]);
 
-    if (appMode === "member" && session) {
-      queryPengeluaran = queryPengeluaran.eq("user_id", session.user.id);
-      queryTabungan = queryTabungan.eq("user_id", session.user.id);
-    } else {
-      queryPengeluaran = queryPengeluaran.is("user_id", null);
-      queryTabungan = queryTabungan.is("user_id", null);
-    }
-
-    const { data: dataPengeluaran } = await queryPengeluaran;
-    const { data: dataTabungan } = await queryTabungan;
+      const dataPengeluaran = resPengeluaran.data;
+      const dataTabungan = resTabungan.data;
 
     if (dataPengeluaran) {
       const bulanSekarang = new Date().toISOString().slice(0, 7);
@@ -321,6 +328,7 @@ export default function App() {
         tabunganTerkunci: hitungTabunganTerkunci
       });
     }
+    setIsDataLoading(false);
   };
 
 
@@ -756,6 +764,7 @@ if (appMode === "auth" && !session) {
         setIsJoined={setIsJoined}
         appMode={appMode}
         onChooseLogin={onChooseLogin}
+        isDataLoading={isDataLoading}
       />
     );
   } else {
