@@ -780,7 +780,7 @@ if (appMode === "auth" && !session) {
   let mainContent = null;
 
   if (isHistory) {
-    mainContent = <HistoryView setIsHistory={setIsHistory} riwayatData={riwayatData} totals={totals} toggleThemeButton={toggleThemeButton} />;
+    mainContent = <HistoryView setIsHistory={setIsHistory} riwayatData={riwayatData} totals={totals} toggleThemeButton={toggleThemeButton} appMode={appMode} />;
   } else if (!isJoined) {
     mainContent = (
       <LobbyView

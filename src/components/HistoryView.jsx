@@ -2,7 +2,7 @@ import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { colors, styles } from '../constants/theme';
 
-const HistoryView = ({ setIsHistory, riwayatData, totals, toggleThemeButton }) => {
+const HistoryView = ({ setIsHistory, riwayatData, totals, toggleThemeButton, appMode }) => {
   return (
     <div style={styles.bodyWrapper}>
       <div style={styles.fullContainer} className="mobile-p-10">
@@ -36,10 +36,18 @@ const HistoryView = ({ setIsHistory, riwayatData, totals, toggleThemeButton }) =
                     <td style={{ ...styles.td, fontWeight: '700' }}>
                       {new Date(row.bulan + "-01").toLocaleString('id-ID', { month: 'long', year: 'numeric' })}
                     </td>
-                    <td style={styles.td} className="mobile-hide">Rp {totals.modalTerdaftar.toLocaleString("id-ID")}</td>
-                    <td style={{ ...styles.td, color: colors.success }}>+ Rp {row.pemasukan.toLocaleString("id-ID")}</td>
-                    <td style={{ ...styles.td, color: colors.danger }}>- Rp {row.pengeluaran.toLocaleString("id-ID")}</td>
-                    <td style={{ ...styles.td, color: colors.blue }}>🔒 Rp {row.tabungan.toLocaleString("id-ID")}</td>
+                    <td style={styles.td} className="mobile-hide">
+                      {appMode === "guest" ? "Rp ***" : `Rp ${totals.modalTerdaftar.toLocaleString("id-ID")}`}
+                    </td>
+                    <td style={{ ...styles.td, color: colors.success }}>
+                      {appMode === "guest" ? "+ Rp ***" : `+ Rp ${row.pemasukan.toLocaleString("id-ID")}`}
+                    </td>
+                    <td style={{ ...styles.td, color: colors.danger }}>
+                      {appMode === "guest" ? "- Rp ***" : `- Rp ${row.pengeluaran.toLocaleString("id-ID")}`}
+                    </td>
+                    <td style={{ ...styles.td, color: colors.blue }}>
+                      {appMode === "guest" ? "🔒 Rp ***" : `🔒 Rp ${row.tabungan.toLocaleString("id-ID")}`}
+                    </td>
                   </tr>
                 ))}
                 {riwayatData.length === 0 && (
