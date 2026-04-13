@@ -154,28 +154,28 @@ export default function App() {
   }, [isDarkMode]);
 
   const toggleThemeButton = (
-    <div style={{ display: 'flex', flexDirection: 'row', gap: '8px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
       <button
         onClick={() => setShowGuide(true)}
-        style={{ ...styles.btnSecondary, display: 'flex', alignItems: 'center', gap: '8px', padding: '10px' }}
+        style={{ ...styles.btnSecondary, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px' }}
         title="Panduan Lengkap"
       >
-        <HelpCircle size={18} color={colors.blue} />
+        <HelpCircle size={16} color={colors.blue} />
       </button>
       <button
         onClick={() => setIsDarkMode(!isDarkMode)}
-        style={{ ...styles.btnSecondary, display: 'flex', alignItems: 'center', gap: '8px', padding: '10px' }}
+        style={{ ...styles.btnSecondary, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px' }}
         title="Ganti Mode"
       >
-        {isDarkMode ? <Sun size={18} color={colors.warning} /> : <Moon size={18} color={colors.blue} />}
+        {isDarkMode ? <Sun size={16} color={colors.warning} /> : <Moon size={16} color={colors.blue} />}
       </button>
       {appMode === 'member' && session && (
         <button
           onClick={() => supabase.auth.signOut()}
-          style={{ ...styles.btnSecondary, display: 'flex', alignItems: 'center', gap: '8px', padding: '10px' }}
+          style={{ ...styles.btnSecondary, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '6px' }}
           title="Keluar"
         >
-          <LogOut size={18} color={colors.danger} />
+          <LogOut size={16} color={colors.danger} />
         </button>
       )}
     </div>
