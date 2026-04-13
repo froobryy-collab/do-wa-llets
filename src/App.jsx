@@ -42,7 +42,10 @@ export default function App() {
 
   // Auth & Navigation State
   const [session, setSession] = useState(null);
-  const [appMode, setAppMode] = useState("landing"); 
+  const [appMode, setAppMode] = useState(() => {
+    // Jika user sudah pernah melihat landing page di sesi ini, jangan paksa masuk landing lagi saat refresh
+    return sessionStorage.getItem("hasVisited") ? "welcome" : "landing";
+  }); 
   const [showGuide, setShowGuide] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false); // State baru untuk pengamanan data
 
@@ -58,13 +61,29 @@ export default function App() {
   useEffect(() => {
     const handleAuthChange = async (currSession) => {
       setSession(currSession);
+      
+      const hasVisited = sessionStorage.getItem("hasVisited");
+      
       if (currSession) {
         setIsSyncing(true);
-        setAppMode("member");
         await handleSpecialClaim(currSession.user);
         setIsSyncing(false);
+        
+        // Auto-redirect ke member jika:
+        // 1. Sedang di Auth/Welcome (user aktif login)
+        // 2. ATAU sudah pernah masuk landing di sesi ini (refresh persistence)
+        setAppMode(prev => {
+          if (prev === "auth" || prev === "welcome" || hasVisited) return "member";
+          return prev;
+        });
       } else {
-        setAppMode("welcome");
+        // Jika sedang logout atau sesi hilang, arahkan sesuai status kunjungan
+        if (hasVisited) {
+          setAppMode("welcome");
+        } else {
+          setAppMode("landing");
+        }
+        
         // Reset data saat logout agar transisi bersih & cepat
         setPengeluaran([]);
         setDaftarDompet([]);
@@ -735,7 +754,14 @@ if (printData) {
 
 // 1. LANDING PAGE (Web Only)
 if (appMode === "landing") {
-  return <LandingView onEnterApp={() => setAppMode("welcome")} />;
+  return <LandingView onEnterApp={() => {
+    sessionStorage.setItem("hasVisited", "true"); // Tandai bahwa user sudah masuk ke aplikasi di sesi ini
+    if (session) {
+      setAppMode("member");
+    } else {
+      setAppMode("welcome");
+    }
+  }} />;
 }
 
 // 2. WELCOME SCREEN
