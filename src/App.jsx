@@ -263,72 +263,76 @@ export default function App() {
       const dataPengeluaran = resPengeluaran.data;
       const dataTabungan = resTabungan.data;
 
-    if (dataPengeluaran) {
-      const bulanSekarang = new Date().toISOString().slice(0, 7);
-      const uniqueWallets = [...new Set(dataPengeluaran.map(item => item.kode_grup))].filter(Boolean);
+      if (dataPengeluaran) {
+        const bulanSekarang = new Date().toISOString().slice(0, 7);
+        const uniqueWallets = [...new Set(dataPengeluaran.map(item => item.kode_grup))].filter(Boolean);
 
-      let hitungModalTerdaftar = 0;
-      let hitungTotalPemasukan = 0;
-      let hitungTotalPengeluaran = 0;
-      let hitungTabunganTerkunci = 0;
+        let hitungModalTerdaftar = 0;
+        let hitungTotalPemasukan = 0;
+        let hitungTotalPengeluaran = 0;
+        let hitungTabunganTerkunci = 0;
 
-      // 1. DATA UNTUK DASHBOARD DENGAN LOGIKA ACTIVE PERIOD BARU
-      const listLengkap = uniqueWallets.map(namaDompet => {
-        const dataTab = dataTabungan?.find(t => t.kode_grup === namaDompet);
+        // 1. DATA UNTUK DASHBOARD DENGAN LOGIKA ACTIVE PERIOD BARU
+        const listLengkap = uniqueWallets.map(namaDompet => {
+          const dataTab = dataTabungan?.find(t => t.kode_grup === namaDompet);
 
-        // Transaksi aktif sesuai hukum waktu (Sampai April Gabung, Mei Pisah)
-        const pengeluaranAktif = dataPengeluaran.filter(p => p.kode_grup === namaDompet && isTrxActive(p.tanggal, bulanSekarang));
+          // Transaksi aktif sesuai hukum waktu (Sampai April Gabung, Mei Pisah)
+          const pengeluaranAktif = dataPengeluaran.filter(p => p.kode_grup === namaDompet && isTrxActive(p.tanggal, bulanSekarang));
 
-        // Agregasi Periode Aktif
-        const totalPemasukanAktif = pengeluaranAktif.filter(p => p.jenis === "pemasukan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
-        const pengeluaranMurniAktif = pengeluaranAktif.filter(p => p.jenis === "pengeluaran").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
-        const totalSavedAktif = pengeluaranAktif.filter(p => p.jenis === "tarik_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+          // Agregasi Periode Aktif
+          const totalPemasukanAktif = pengeluaranAktif.filter(p => p.jenis === "pemasukan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+          const pengeluaranMurniAktif = pengeluaranAktif.filter(p => p.jenis === "pengeluaran").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+          const totalSavedAktif = pengeluaranAktif.filter(p => p.jenis === "tarik_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
 
-        const modal = dataTab ? parseFloat(dataTab.modal_awal) : 0;
+          const modal = dataTab ? parseFloat(dataTab.modal_awal) : 0;
 
-        // Hitung Saldo berdasarkan transaksi aktif dan modal statis
-        const sisaUangAsli = modal + totalPemasukanAktif - pengeluaranMurniAktif - totalSavedAktif;
+          // Hitung Saldo berdasarkan transaksi aktif dan modal statis
+          const sisaUangAsli = modal + totalPemasukanAktif - pengeluaranMurniAktif - totalSavedAktif;
 
-        hitungModalTerdaftar += modal;
-        hitungTotalPemasukan += totalPemasukanAktif;
-        hitungTotalPengeluaran += pengeluaranMurniAktif;
+          hitungModalTerdaftar += modal;
+          hitungTotalPemasukan += totalPemasukanAktif;
+          hitungTotalPengeluaran += pengeluaranMurniAktif;
 
-        return {
-          nama: namaDompet,
-          modalAwal: modal,
-          pemasukan: totalPemasukanAktif,
-          pengeluaran: pengeluaranMurniAktif + totalSavedAktif,
-          sisaUang: sisaUangAsli,
-        };
-      });
+          return {
+            nama: namaDompet,
+            modalAwal: modal,
+            pemasukan: totalPemasukanAktif,
+            pengeluaran: pengeluaranMurniAktif + totalSavedAktif,
+            sisaUang: sisaUangAsli,
+          };
+        });
 
-      // 2. HITUNG TOTAL TABUNGAN TERKUNCI (GLOBAL)
-      dataTabungan?.forEach(t => {
-        hitungTabunganTerkunci += (parseFloat(t.tabungan_bulan_ini) + parseFloat(t.total_tabungan_semua));
-      });
+        // 2. HITUNG TOTAL TABUNGAN TERKUNCI (GLOBAL)
+        dataTabungan?.forEach(t => {
+          hitungTabunganTerkunci += (parseFloat(t.tabungan_bulan_ini) + parseFloat(t.total_tabungan_semua));
+        });
 
-      // 3. LOGIKA AGREGASI RIWAYAT (PER BULAN)
-      const grupRiwayat = dataPengeluaran.reduce((acc, curr) => {
-        const bulan = curr.tanggal.slice(0, 7);
-        if (!acc[bulan]) acc[bulan] = { bulan, pemasukan: 0, pengeluaran: 0, tabungan: 0 };
+        // 3. LOGIKA AGREGASI RIWAYAT (PER BULAN)
+        const grupRiwayat = dataPengeluaran.reduce((acc, curr) => {
+          const bulan = curr.tanggal.slice(0, 7);
+          if (!acc[bulan]) acc[bulan] = { bulan, pemasukan: 0, pengeluaran: 0, tabungan: 0 };
 
-        if (curr.jenis === "pemasukan") acc[bulan].pemasukan += parseFloat(curr.nominal);
-        else if (curr.jenis === "pengeluaran") acc[bulan].pengeluaran += parseFloat(curr.nominal);
-        else if (curr.jenis === "tarik_tabungan") acc[bulan].tabungan += parseFloat(curr.nominal);
+          if (curr.jenis === "pemasukan") acc[bulan].pemasukan += parseFloat(curr.nominal);
+          else if (curr.jenis === "pengeluaran") acc[bulan].pengeluaran += parseFloat(curr.nominal);
+          else if (curr.jenis === "tarik_tabungan") acc[bulan].tabungan += parseFloat(curr.nominal);
 
-        return acc;
-      }, {});
+          return acc;
+        }, {});
 
-      setDaftarDompet(listLengkap);
-      setRiwayatData(Object.values(grupRiwayat).sort((a, b) => b.bulan.localeCompare(a.bulan)));
-      setTotals({
-        modalTerdaftar: hitungModalTerdaftar,
-        totalPemasukan: hitungTotalPemasukan,
-        totalPengeluaran: hitungTotalPengeluaran,
-        tabunganTerkunci: hitungTabunganTerkunci
-      });
+        setDaftarDompet(listLengkap);
+        setRiwayatData(Object.values(grupRiwayat).sort((a, b) => b.bulan.localeCompare(a.bulan)));
+        setTotals({
+          modalTerdaftar: hitungModalTerdaftar,
+          totalPemasukan: hitungTotalPemasukan,
+          totalPengeluaran: hitungTotalPengeluaran,
+          tabunganTerkunci: hitungTabunganTerkunci
+        });
+      }
+    } catch (error) {
+      console.error("Gagal memuat daftar dompet:", error);
+    } finally {
+      setIsDataLoading(false);
     }
-    setIsDataLoading(false);
   };
 
 
