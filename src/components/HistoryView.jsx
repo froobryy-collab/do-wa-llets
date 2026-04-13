@@ -37,16 +37,16 @@ const HistoryView = ({ setIsHistory, riwayatData, totals, toggleThemeButton, app
                       {new Date(row.bulan + "-01").toLocaleString('id-ID', { month: 'long', year: 'numeric' })}
                     </td>
                     <td style={styles.td} className="mobile-hide">
-                      {appMode === "guest" ? "Rp ***" : `Rp ${totals.modalTerdaftar.toLocaleString("id-ID")}`}
+                      {appMode === "guest" ? "Rp 0" : `Rp ${totals.modalTerdaftar.toLocaleString("id-ID")}`}
                     </td>
                     <td style={{ ...styles.td, color: colors.success }}>
-                      {appMode === "guest" ? "+ Rp ***" : `+ Rp ${row.pemasukan.toLocaleString("id-ID")}`}
+                      {appMode === "guest" ? "+ Rp 0" : `+ Rp ${row.pemasukan.toLocaleString("id-ID")}`}
                     </td>
                     <td style={{ ...styles.td, color: colors.danger }}>
-                      {appMode === "guest" ? "- Rp ***" : `- Rp ${row.pengeluaran.toLocaleString("id-ID")}`}
+                      {appMode === "guest" ? "- Rp 0" : `- Rp ${row.pengeluaran.toLocaleString("id-ID")}`}
                     </td>
                     <td style={{ ...styles.td, color: colors.blue }}>
-                      {appMode === "guest" ? "🔒 Rp ***" : `🔒 Rp ${row.tabungan.toLocaleString("id-ID")}`}
+                      {appMode === "guest" ? "🔒 Rp 0" : `🔒 Rp ${row.tabungan.toLocaleString("id-ID")}`}
                     </td>
                   </tr>
                 ))}

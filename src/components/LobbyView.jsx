@@ -91,7 +91,7 @@ const LobbyView = ({
               </div>
             </div>
             <h2 style={{ ...styles.cardNumber, color: colors.success }} className="card-number">
-              {appMode === "guest" ? "Rp ***" : `Rp ${totals.modalTerdaftar.toLocaleString("id-ID")}`}
+              {appMode === "guest" ? "Rp 0" : `Rp ${totals.modalTerdaftar.toLocaleString("id-ID")}`}
             </h2>
           </div>
 
@@ -106,7 +106,7 @@ const LobbyView = ({
               </div>
             </div>
             <h2 style={{ ...styles.cardNumber, color: colors.success }} className="card-number">
-              {appMode === "guest" ? "+ Rp ***" : `+ Rp ${totals.totalPemasukan.toLocaleString("id-ID")}`}
+              {appMode === "guest" ? "+ Rp 0" : `+ Rp ${totals.totalPemasukan.toLocaleString("id-ID")}`}
             </h2>
           </div>
 
@@ -118,7 +118,7 @@ const LobbyView = ({
               </div>
             </div>
             <h2 style={{ ...styles.cardNumber, color: colors.danger }} className="card-number">
-              {appMode === "guest" ? "- Rp ***" : `- Rp ${totals.totalPengeluaran.toLocaleString("id-ID")}`}
+              {appMode === "guest" ? "- Rp 0" : `- Rp ${totals.totalPengeluaran.toLocaleString("id-ID")}`}
             </h2>
           </div>
 
@@ -130,7 +130,7 @@ const LobbyView = ({
               </div>
             </div>
             <h2 style={{ ...styles.cardNumber, color: colors.blue }} className="card-number">
-              {appMode === "guest" ? "Rp ***" : `Rp ${totals.tabunganTerkunci.toLocaleString("id-ID")}`}
+              {appMode === "guest" ? "Rp 0" : `Rp ${totals.tabunganTerkunci.toLocaleString("id-ID")}`}
             </h2>
           </div>
         </div>
@@ -192,16 +192,16 @@ const LobbyView = ({
                       </span>
                     </td>
                     <td style={{ ...styles.td, textAlign: 'center', fontWeight: '500', color: colors.textMuted }}>
-                      {appMode === "guest" ? "Rp ***" : `Rp ${dompet.modalAwal.toLocaleString("id-ID")}`}
+                      {appMode === "guest" ? "Rp 0" : `Rp ${dompet.modalAwal.toLocaleString("id-ID")}`}
                     </td>
                     <td style={{ ...styles.td, textAlign: 'center', color: colors.success, fontWeight: '600' }}>
-                      {appMode === "guest" ? "+ Rp ***" : `+Rp ${dompet.pemasukan.toLocaleString("id-ID")}`}
+                      {appMode === "guest" ? "+ Rp 0" : `+Rp ${dompet.pemasukan.toLocaleString("id-ID")}`}
                     </td>
                     <td style={{ ...styles.td, textAlign: 'center', color: colors.danger, fontWeight: '600' }}>
-                      {appMode === "guest" ? "- Rp ***" : `-Rp ${dompet.pengeluaran.toLocaleString("id-ID")}`}
+                      {appMode === "guest" ? "- Rp 0" : `-Rp ${dompet.pengeluaran.toLocaleString("id-ID")}`}
                     </td>
                     <td style={{ ...styles.td, textAlign: 'center', color: colors.success, fontWeight: '700' }}>
-                      {appMode === "guest" ? "Rp ***" : `Rp ${dompet.sisaUang.toLocaleString("id-ID")}`} <span style={{ color: colors.success, fontSize: '0.8rem' }}>●</span>
+                      {appMode === "guest" ? "Rp 0" : `Rp ${dompet.sisaUang.toLocaleString("id-ID")}`} <span style={{ color: colors.success, fontSize: '0.8rem' }}>●</span>
                     </td>
                   </tr>
                 ))}
