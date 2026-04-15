@@ -519,8 +519,15 @@ useEffect(() => {
     fetchData();
     fetchKeuanganDompet();
     checkAndSweepMonthlyData();
+    window.scrollTo(0, 0);
   }
 }, [isJoined]);
+
+useEffect(() => {
+  if (isHistory) {
+    window.scrollTo(0, 0);
+  }
+}, [isHistory]);
 
 const handleJoin = (e) => {
   e.preventDefault();
