@@ -244,6 +244,7 @@ export default function App() {
       if (curr.jenis === "pemasukan") acc[date].income += nominal;
       else if (curr.jenis === "pengeluaran") acc[date].outcome += nominal;
       else if (curr.jenis === "tarik_tabungan") acc[date].saved += nominal;
+      else if (curr.jenis === "ambil_tabungan") acc[date].income += nominal;
 
       acc[date].balance = acc[date].income - (acc[date].outcome + acc[date].saved);
       return acc;
@@ -302,29 +303,32 @@ export default function App() {
           const totalPemasukanAktif = pengeluaranAktif.filter(p => p.jenis === "pemasukan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
           const pengeluaranMurniAktif = pengeluaranAktif.filter(p => p.jenis === "pengeluaran").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
           const totalSavedAktif = pengeluaranAktif.filter(p => p.jenis === "tarik_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+          const totalAmbilAktif = pengeluaranAktif.filter(p => p.jenis === "ambil_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
 
           const modal = dataTab ? parseFloat(dataTab.modal_awal) : 0;
 
           // Hitung Saldo berdasarkan transaksi aktif dan modal statis
-          const sisaUangAsli = modal + totalPemasukanAktif - pengeluaranMurniAktif - totalSavedAktif;
+          const sisaUangAsli = modal + totalPemasukanAktif + totalAmbilAktif - pengeluaranMurniAktif - totalSavedAktif;
 
           hitungModalTerdaftar += modal;
-          hitungTotalPemasukan += totalPemasukanAktif;
+          hitungTotalPemasukan += (totalPemasukanAktif + totalAmbilAktif);
           hitungTotalPengeluaran += pengeluaranMurniAktif;
 
           return {
             nama: namaDompet,
             modalAwal: modal,
-            pemasukan: totalPemasukanAktif,
+            pemasukan: totalPemasukanAktif + totalAmbilAktif,
             pengeluaran: pengeluaranMurniAktif + totalSavedAktif,
             sisaUang: sisaUangAsli,
           };
         });
 
         // 2. HITUNG TOTAL TABUNGAN TERKUNCI (GLOBAL)
+        const totalSemuaWithdraw = dataPengeluaran.filter(p => p.jenis === "ambil_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
         dataTabungan?.forEach(t => {
           hitungTabunganTerkunci += (parseFloat(t.tabungan_bulan_ini) + parseFloat(t.total_tabungan_semua));
         });
+        hitungTabunganTerkunci -= totalSemuaWithdraw;
 
         // 3. LOGIKA AGREGASI RIWAYAT (PER BULAN)
         const grupRiwayat = dataPengeluaran.reduce((acc, curr) => {
@@ -334,6 +338,10 @@ export default function App() {
           if (curr.jenis === "pemasukan") acc[bulan].pemasukan += parseFloat(curr.nominal);
           else if (curr.jenis === "pengeluaran") acc[bulan].pengeluaran += parseFloat(curr.nominal);
           else if (curr.jenis === "tarik_tabungan") acc[bulan].tabungan += parseFloat(curr.nominal);
+          else if (curr.jenis === "ambil_tabungan") {
+            acc[bulan].pemasukan += parseFloat(curr.nominal);
+            acc[bulan].tabungan -= parseFloat(curr.nominal);
+          }
 
           return acc;
         }, {});
@@ -678,16 +686,18 @@ const handleCetak = () => {
   const labelPeriode = filterCetak === "harian" ? pilihanTgl : (filterCetak === "bulanan" ? pilihanBln : (filterCetak === "tahunan" ? pilihanThn : "Semua"));
 
   // Perhitungan Terpisah
-  const tlnPemasukan = dataDisaring.filter(p => p.jenis === "pemasukan").reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
+  const tlnPemasukan = dataDisaring.filter(p => p.jenis === "pemasukan" || p.jenis === "ambil_tabungan").reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
   const tlnPengeluaran = dataDisaring.filter(p => p.jenis === "pengeluaran").reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
   const tlnSaved = dataDisaring.filter(p => p.jenis === "tarik_tabungan").reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
+  const tlnAmbil = dataDisaring.filter(p => p.jenis === "ambil_tabungan").reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
 
   setPrintData({
     dataDisaring,
     labelPeriode,
     tlnPemasukan,
     tlnPengeluaran,
-    tlnSaved
+    tlnSaved,
+    tlnAmbil
   });
 };
 
@@ -696,11 +706,15 @@ const bulanSedangBerjalan = new Date().toISOString().slice(0, 7);
 const pengeluaranAktifBulanIni = pengeluaran.filter(item => isTrxActive(item.tanggal, bulanSedangBerjalan));
 
 const totalPemasukanAktif = pengeluaranAktifBulanIni
-  .filter(item => item.jenis === "pemasukan")
+  .filter(item => item.jenis === "pemasukan" || item.jenis === "ambil_tabungan")
   .reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
 const totalPengeluaranAktif = pengeluaranAktifBulanIni
   .filter(item => item.jenis === "pengeluaran" || item.jenis === "tarik_tabungan")
   .reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
+const totalAmbilTabunganAktif = pengeluaranAktifBulanIni
+  .filter(item => item.jenis === "ambil_tabungan")
+  .reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
+
 const sisaUangAktif = keuangan.modal_awal + totalPemasukanAktif - totalPengeluaranAktif;
 
 // --- RENDERING VIEWS (STATE MACHINE) ---
@@ -748,6 +762,10 @@ if (printData) {
           <tr>
             <td colSpan="3" style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'right', color: '#3B82F6' }}>TOTAL TABUNGAN (🔒):</td>
             <td style={{ border: '1px solid #ddd', padding: '10px', color: '#3B82F6' }}>Rp {printData.tlnSaved.toLocaleString("id-ID")}</td>
+          </tr>
+          <tr>
+            <td colSpan="3" style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'right', color: colors.blue }}>DARI TABUNGAN (+):</td>
+            <td style={{ border: '1px solid #ddd', padding: '10px', color: colors.blue }}>Rp {printData.tlnAmbil.toLocaleString("id-ID")}</td>
           </tr>
           <tr style={{ background: '#f1f5f9', fontSize: '1.1em' }}>
             <td colSpan="3" style={{ border: '1px solid #ddd', padding: '10px', textAlign: 'right', color: '#000' }}>SALDO AKHIR PERIODE:</td>
@@ -827,6 +845,7 @@ if (appMode === "auth" && !session) {
             handleSetModal={handleSetModal}
             keuangan={keuangan}
             sisaUangAktif={sisaUangAktif}
+            totalAmbilTabunganAktif={totalAmbilTabunganAktif}
           />
 
           {/* HALAMAN ANALISIS GRAFIK */}

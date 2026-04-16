@@ -51,6 +51,7 @@ const TransactionForm = ({
             <option value="pengeluaran">➖ Uang Keluar (Jajan/Beli)</option>
             <option value="pemasukan">➕ Uang Masuk (Gaji/Bonus)</option>
             <option value="tarik_tabungan">🔒 Tarik ke Tabungan (Simpan)</option>
+            <option value="ambil_tabungan">🔓 Ambil dari Tabungan (Gunakan)</option>
           </select>
         </div>
 

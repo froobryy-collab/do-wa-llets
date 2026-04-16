@@ -26,6 +26,7 @@ const TransactionTable = ({
             {pengeluaran.map((item, index) => {
               const isIncome = item.jenis === "pemasukan";
               const isSaving = item.jenis === "tarik_tabungan";
+              const isWithdraw = item.jenis === "ambil_tabungan";
 
               const summary = dailySummaries[item.tanggal] || { income: 0, outcome: 0, saved: 0, balance: 0 };
               const totalPemasukanHariIni = summary.income;
@@ -55,11 +56,11 @@ const TransactionTable = ({
                         fontWeight: '700',
                         textTransform: 'uppercase'
                       }}>
-                        {isIncome ? 'Income' : (isSaving ? 'Saved 🔒' : 'Outcome')}
+                        {isIncome ? 'Income' : (isSaving ? 'Saved 🔒' : (isWithdraw ? 'ambil tabungan(withdraw)' : 'Outcome'))}
                       </span>
                     </td>
-                    <td style={{ ...styles.td, textAlign: 'right', color: isIncome ? colors.success : colors.textMain, fontWeight: isIncome ? '700' : '500' }}>
-                      {isIncome ? "+ " : ""}Rp {parseFloat(item.nominal).toLocaleString("id-ID")}
+                    <td style={{ ...styles.td, textAlign: 'right', color: (isIncome || isWithdraw) ? colors.success : colors.textMain, fontWeight: (isIncome || isWithdraw) ? '700' : '500' }}>
+                      {(isIncome || isWithdraw) ? "+ " : ""}Rp {parseFloat(item.nominal).toLocaleString("id-ID")}
                     </td>
                     <td style={{ ...styles.td, textAlign: 'center' }}>
                       <span style={{ ...styles.actionBtn, color: colors.blue }} onClick={() => handleEditClick(item)}>✏️</span>

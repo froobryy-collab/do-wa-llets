@@ -6,7 +6,8 @@ const WalletDashboard = ({
   setInputModal,
   handleSetModal,
   keuangan,
-  sisaUangAktif
+  sisaUangAktif,
+  totalAmbilTabunganAktif
 }) => {
   return (
     <div style={{ ...styles.brankasGrid, marginBottom: '20px' }} className="mobile-grid-1">
@@ -47,7 +48,7 @@ const WalletDashboard = ({
       <div style={{ ...styles.whiteCard, background: "#EFF6FF" }}>
         <p style={{ ...styles.cardLabel, color: colors.blue }}>Total Tabungan Terkunci</p>
         <h2 style={{ margin: "5px 0 0 0", color: colors.blue, fontSize: '1.6rem', fontWeight: '800' }} className="card-number">
-          Rp {(keuangan.tabungan_bulan_ini + keuangan.total_tabungan_semua).toLocaleString("id-ID")}
+          Rp {(keuangan.tabungan_bulan_ini + keuangan.total_tabungan_semua - totalAmbilTabunganAktif).toLocaleString("id-ID")}
         </h2>
         <p style={{ margin: "4px 0 0 0", fontSize: '0.75rem', color: colors.textMuted }}>Saved bulan lalu</p>
       </div>
