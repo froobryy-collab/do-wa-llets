@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { colors, styles } from '../constants/theme';
 
 const WalletDashboard = ({
@@ -7,8 +7,25 @@ const WalletDashboard = ({
   handleSetModal,
   keuangan,
   sisaUangAktif,
-  totalAmbilTabunganAktif
+  totalAmbilTabunganAktif,
+  totalSavedAktifBulanIni,
+  kodeDompet
 }) => {
+  const [savingsName, setSavingsName] = useState(() => {
+    return localStorage.getItem(`savingsName_${kodeDompet}`) || "Nama Tabungan";
+  });
+
+  useEffect(() => {
+    localStorage.setItem(`savingsName_${kodeDompet}`, savingsName);
+  }, [savingsName, kodeDompet]);
+
+  // Reset name if wallet changes and no name exists
+  useEffect(() => {
+    const saved = localStorage.getItem(`savingsName_${kodeDompet}`);
+    if (saved) setSavingsName(saved);
+    else setSavingsName("Nama Tabungan");
+  }, [kodeDompet]);
+
   return (
     <div style={{ ...styles.brankasGrid, marginBottom: '20px' }} className="mobile-grid-1">
       <div style={styles.whiteCard}>
@@ -48,9 +65,27 @@ const WalletDashboard = ({
       <div style={{ ...styles.whiteCard, background: "#EFF6FF" }}>
         <p style={{ ...styles.cardLabel, color: colors.blue }}>Total Tabungan Terkunci</p>
         <h2 style={{ margin: "5px 0 0 0", color: colors.blue, fontSize: '1.6rem', fontWeight: '800' }} className="card-number">
-          Rp {(keuangan.tabungan_bulan_ini + keuangan.total_tabungan_semua - totalAmbilTabunganAktif).toLocaleString("id-ID")}
+          Rp {(keuangan.tabungan_bulan_ini + keuangan.total_tabungan_semua + totalSavedAktifBulanIni - totalAmbilTabunganAktif).toLocaleString("id-ID")}
         </h2>
-        <p style={{ margin: "4px 0 0 0", fontSize: '0.75rem', color: colors.textMuted }}>Saved bulan lalu</p>
+        <div style={{ marginTop: '5px' }}>
+          <input 
+            type="text"
+            value={savingsName}
+            onChange={(e) => setSavingsName(e.target.value)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              borderBottom: `1px dashed ${colors.border}`,
+              color: colors.textMuted,
+              fontSize: '0.75rem',
+              width: '100%',
+              padding: '2px 0',
+              outline: 'none',
+              textAlign: 'left'
+            }}
+            placeholder="Nama Tabungan (cth: Beli Motor)"
+          />
+        </div>
       </div>
     </div>
   );

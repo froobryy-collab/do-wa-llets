@@ -325,10 +325,12 @@ export default function App() {
 
         // 2. HITUNG TOTAL TABUNGAN TERKUNCI (GLOBAL)
         const totalSemuaWithdraw = dataPengeluaran.filter(p => p.jenis === "ambil_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+        const totalSemuaSavedBulanIni = dataPengeluaran.filter(p => p.jenis === "tarik_tabungan" && isTrxActive(p.tanggal, bulanSekarang)).reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+        
         dataTabungan?.forEach(t => {
           hitungTabunganTerkunci += (parseFloat(t.tabungan_bulan_ini) + parseFloat(t.total_tabungan_semua));
         });
-        hitungTabunganTerkunci -= totalSemuaWithdraw;
+        hitungTabunganTerkunci = hitungTabunganTerkunci + totalSemuaSavedBulanIni - totalSemuaWithdraw;
 
         // 3. LOGIKA AGREGASI RIWAYAT (PER BULAN)
         const grupRiwayat = dataPengeluaran.reduce((acc, curr) => {
@@ -711,6 +713,9 @@ const totalPemasukanAktif = pengeluaranAktifBulanIni
 const totalPengeluaranAktif = pengeluaranAktifBulanIni
   .filter(item => item.jenis === "pengeluaran" || item.jenis === "tarik_tabungan")
   .reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
+const totalSavedAktifBulanIni = pengeluaranAktifBulanIni
+  .filter(item => item.jenis === "tarik_tabungan")
+  .reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
 const totalAmbilTabunganAktif = pengeluaranAktifBulanIni
   .filter(item => item.jenis === "ambil_tabungan")
   .reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
@@ -846,6 +851,8 @@ if (appMode === "auth" && !session) {
             keuangan={keuangan}
             sisaUangAktif={sisaUangAktif}
             totalAmbilTabunganAktif={totalAmbilTabunganAktif}
+            totalSavedAktifBulanIni={totalSavedAktifBulanIni}
+            kodeDompet={kodeDompet}
           />
 
           {/* HALAMAN ANALISIS GRAFIK */}
