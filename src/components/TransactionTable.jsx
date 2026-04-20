@@ -63,9 +63,18 @@ const TransactionTable = ({
                       {(isIncome || isWithdraw) ? "+ " : ""}Rp {parseFloat(item.nominal).toLocaleString("id-ID")}
                     </td>
                     <td style={{ ...styles.td, textAlign: 'center' }}>
-                      <span style={{ ...styles.actionBtn, color: colors.blue }} onClick={() => handleEditClick(item)}>✏️</span>
-                      <span style={{ ...styles.actionBtn, color: colors.danger, marginLeft: '10px' }} onClick={() => handleDeleteTransaction(item.id)}>🗑️</span>
+                      {item.is_pending ? (
+                        <span style={{ fontSize: '0.7rem', color: colors.warning, fontWeight: '700', textTransform: 'uppercase', fontStyle: 'italic' }}>
+                          Menunggu Internet... ⏳
+                        </span>
+                      ) : (
+                        <>
+                          <span style={{ ...styles.actionBtn, color: colors.blue }} onClick={() => handleEditClick(item)}>✏️</span>
+                          <span style={{ ...styles.actionBtn, color: colors.danger, marginLeft: '10px' }} onClick={() => handleDeleteTransaction(item.id)}>🗑️</span>
+                        </>
+                      )}
                     </td>
+
                   </tr>
 
                   {isLastRowInDate && (

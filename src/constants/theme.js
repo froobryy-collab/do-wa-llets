@@ -150,5 +150,42 @@ export const styles = {
   button: { padding: "14px 24px", borderRadius: "14px", border: "none", color: "white", background: `linear-gradient(135deg, ${colors.success}, #059669)`, fontWeight: "700", cursor: "pointer", boxShadow: '0 4px 10px rgba(16, 185, 129, 0.25)', transition: "transform 0.2s" },
   btnSecondary: { padding: "12px 20px", borderRadius: "14px", border: `1.5px solid ${colors.border}`, background: colors.bg, color: colors.textMain, fontWeight: "600", cursor: "pointer", fontSize: "0.9rem", transition: "all 0.2s" },
   btnDanger: { padding: "10px 18px", borderRadius: "10px", border: "none", background: colors.danger, color: "#fff", fontWeight: "600", cursor: "pointer", fontSize: "0.85rem", opacity: 0.9 },
-  actionBtn: { cursor: "pointer", fontSize: "1.1rem", transition: "transform 0.1s" }
+  actionBtn: { cursor: "pointer", fontSize: "1.1rem", transition: "transform 0.1s" },
+  offlineBanner: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#EF4444',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    padding: '10px',
+    fontSize: '0.9rem',
+    fontWeight: '700',
+    zIndex: 9999,
+    boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '10px'
+  },
+  syncingBanner: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: '#3B82F6',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    padding: '10px',
+    fontSize: '0.9rem',
+    fontWeight: '700',
+    zIndex: 9999,
+    boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '10px'
+  }
 };
+

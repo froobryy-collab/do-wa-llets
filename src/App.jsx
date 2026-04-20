@@ -48,6 +48,64 @@ export default function App() {
   }); 
   const [showGuide, setShowGuide] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false); // State baru untuk pengamanan data
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [isProcessingQueue, setIsProcessingQueue] = useState(false);
+
+  const processOfflineQueue = async () => {
+    const queue = JSON.parse(localStorage.getItem("pendingTransactions") || "[]");
+    if (queue.length === 0 || isProcessingQueue) return;
+
+    setIsProcessingQueue(true);
+    console.log("🔄 [SYNC] Memproses antrean transaksi offline:", queue.length);
+
+    const successfulSyncs = [];
+    
+    for (const item of queue) {
+      try {
+        const { error } = await supabase.from("pengeluaran").insert([item]);
+        if (!error) {
+          successfulSyncs.push(item);
+        } else {
+          console.error("❌ [SYNC-ERROR] Gagal sinkron:", error.message);
+        }
+      } catch (err) {
+        console.error("❌ [SYNC-FATAL]", err);
+      }
+    }
+
+    // Hapus data yang berhasil dikirim dari antrean
+    const remainingQueue = queue.filter(q => !successfulSyncs.includes(q));
+    localStorage.setItem("pendingTransactions", JSON.stringify(remainingQueue));
+
+    if (successfulSyncs.length > 0) {
+      console.log(`✅ [SYNC-DONE] Berhasil sinkronisasi ${successfulSyncs.length} data.`);
+      if (typeof fetchData === 'function') fetchData();
+      if (typeof fetchDaftarDompet === 'function') fetchDaftarDompet();
+    }
+    
+    setIsProcessingQueue(false);
+  };
+
+  useEffect(() => {
+    const handleOnline = () => {
+      setIsOnline(true);
+      processOfflineQueue();
+    };
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    // Jalankan pengecekan antrean saat aplikasi pertama kali dimuat
+    if (navigator.onLine) {
+      processOfflineQueue();
+    }
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   useEffect(() => {
     const hasSeenGuide = localStorage.getItem("hasSeenGuide");
@@ -56,6 +114,7 @@ export default function App() {
       localStorage.setItem("hasSeenGuide", "true");
     }
   }, [appMode]);
+
 
 
   useEffect(() => {
@@ -634,6 +693,12 @@ const handleSubmit = async (e) => {
   setLoading(true);
 
   if (isEditing) {
+    if (!isOnline) {
+      alert("Mode Edit hanya tersedia saat online.");
+      setLoading(false);
+      return;
+    }
+
     let queryUp = supabase
       .from("pengeluaran")
       .update({ keterangan: form.keterangan, nominal: parseFloat(form.nominal), tanggal: form.tanggal, jenis: form.jenis, kategori: form.kategori })
@@ -653,7 +718,7 @@ const handleSubmit = async (e) => {
       handleCancelEdit();
     }
   } else {
-    const { error } = await supabase.from("pengeluaran").insert([{
+    const payload = {
       keterangan: form.keterangan,
       nominal: parseFloat(form.nominal),
       tanggal: form.tanggal,
@@ -661,21 +726,38 @@ const handleSubmit = async (e) => {
       jenis: form.jenis,
       kategori: form.kategori,
       user_id: (appMode === "member" && session) ? session.user.id : null
-    }]);
+    };
 
-    if (error) {
-      alert("Gagal Simpan: " + error.message);
-    } else {
+    if (!isOnline) {
+      // MODE OFFLINE: Simpan ke antrean lokal
+      const queue = JSON.parse(localStorage.getItem("pendingTransactions") || "[]");
+      localStorage.setItem("pendingTransactions", JSON.stringify([...queue, payload]));
+      
+      // Update UI lokal agar transaksi terlihat sementara (Optimistic UI)
+      setPengeluaran(prev => [
+        { ...payload, id: 'temp-' + Date.now(), is_pending: true },
+        ...prev
+      ]);
+      
+      alert("⚠️ Koneksi terputus, data disimpan dahulu (Offline). Akan otomatis sinkron saat internet kembali.");
       setForm({ ...form, keterangan: "", nominal: "", jenis: "pengeluaran", kategori: "" });
+    } else {
+      // MODE ONLINE: Langsung ke Supabase
+      const { error } = await supabase.from("pengeluaran").insert([payload]);
+
+      if (error) {
+        alert("Gagal Simpan: " + error.message);
+      } else {
+        setForm({ ...form, keterangan: "", nominal: "", jenis: "pengeluaran", kategori: "" });
+        fetchData();
+        fetchDaftarDompet();
+      }
     }
   }
 
-
-
   setLoading(false);
-  fetchData();
-  fetchDaftarDompet();
 };
+
 
 const handleCetak = () => {
   const dataDisaring = pengeluaran.filter(item => {
@@ -916,7 +998,21 @@ if (appMode === "auth" && !session) {
 
   return (
     <>
-      {mainContent}
+      {!isOnline && (
+        <div style={styles.offlineBanner}>
+          <div style={{ display: 'inline-block', width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#fff', animation: 'pulse 1.5s infinite' }} />
+          Koneksi terputus, data disimpan dahulu...
+        </div>
+      )}
+      {isProcessingQueue && isOnline && (
+        <div style={styles.syncingBanner}>
+          <div className="spinner-small" style={{ border: '2px solid rgba(255,255,255,0.3)', borderTop: '2px solid #fff', borderRadius: '50%', width: '12px', height: '12px', animation: 'spin 1s linear infinite' }} />
+          Menyinkronkan data ke cloud...
+        </div>
+      )}
+      <div style={{ paddingTop: (!isOnline || isProcessingQueue) ? '40px' : '0' }}>
+        {mainContent}
+      </div>
       {/* Footer / Version Marker (Global) */}
       {!printData && (
         <div style={{ textAlign: 'center', padding: '20px', color: colors.textMuted, fontSize: '0.8rem', opacity: 0.6 }}>
@@ -924,9 +1020,26 @@ if (appMode === "auth" && !session) {
         </div>
       )}
       {showGuide && <GuideView onClose={() => setShowGuide(false)} />}
+      
+      {/* Global Animations Style */}
+      <style>{`
+        @keyframes pulse {
+          0% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.4; transform: scale(1.2); }
+          100% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        .spinner-small {
+          display: inline-block;
+        }
+      `}</style>
     </>
   );
 }
+
 
 
 
