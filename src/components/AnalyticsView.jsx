@@ -75,7 +75,7 @@ const AnalyticsView = ({
                 })()}
                 cx="50%" cy="50%" innerRadius={70} outerRadius={100} paddingAngle={5} dataKey="value"
               >
-                {pengeluaran.length > 0 && Object.keys(pengeluaran.reduce((acc, curr) => {
+                {pengeluaran.length > 0 && Object.keys(pengeluaran.filter(p => p.jenis === "pengeluaran" || p.jenis === "tarik_tabungan").reduce((acc, curr) => {
                   const kat = curr.kategori || "lainnya";
                   acc[kat] = (acc[kat] || 0) + parseFloat(curr.nominal);
                   return acc;
