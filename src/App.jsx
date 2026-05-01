@@ -763,7 +763,10 @@ const handleSubmit = async (e) => {
 
 
 const handleCetak = () => {
-  const dataDisaring = pengeluaran.filter(item => {
+  const bulanSekarang = new Date().toISOString().slice(0, 7);
+  const pengeluaranBulanIni = pengeluaran.filter(item => isTrxActive(item.tanggal, bulanSekarang));
+
+  const dataDisaring = pengeluaranBulanIni.filter(item => {
     if (filterCetak === "harian") return item.tanggal === pilihanTgl;
     if (filterCetak === "bulanan") return item.tanggal.startsWith(pilihanBln);
     if (filterCetak === "tahunan") return item.tanggal.startsWith(pilihanThn);
