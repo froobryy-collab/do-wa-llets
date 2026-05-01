@@ -7,8 +7,7 @@ const WalletDashboard = ({
   handleSetModal,
   keuangan,
   sisaUangAktif,
-  totalAmbilTabunganAktif,
-  totalSavedAktifBulanIni,
+  totalTabunganKeseluruhan,
   kodeDompet
 }) => {
   const [savingsName, setSavingsName] = useState(() => {
@@ -65,7 +64,7 @@ const WalletDashboard = ({
       <div style={{ ...styles.whiteCard, background: "#EFF6FF" }}>
         <p style={{ ...styles.cardLabel, color: colors.blue }}>Total Tabungan Terkunci</p>
         <h2 style={{ margin: "5px 0 0 0", color: colors.blue, fontSize: '1.6rem', fontWeight: '800' }} className="card-number">
-          Rp {(keuangan.tabungan_bulan_ini + keuangan.total_tabungan_semua + totalSavedAktifBulanIni - totalAmbilTabunganAktif).toLocaleString("id-ID")}
+          Rp {totalTabunganKeseluruhan.toLocaleString("id-ID")}
         </h2>
         <div style={{ marginTop: '5px' }}>
           <input 

@@ -385,13 +385,11 @@ export default function App() {
         });
 
         // 2. HITUNG TOTAL TABUNGAN TERKUNCI (GLOBAL)
+        const totalSemuaSaved = dataPengeluaran.filter(p => p.jenis === "tarik_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
         const totalSemuaWithdraw = dataPengeluaran.filter(p => p.jenis === "ambil_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
-        const totalSemuaSavedBulanIni = dataPengeluaran.filter(p => p.jenis === "tarik_tabungan" && isTrxActive(p.tanggal, bulanSekarang)).reduce((acc, c) => acc + parseFloat(c.nominal), 0);
         
-        dataTabungan?.forEach(t => {
-          hitungTabunganTerkunci += (parseFloat(t.tabungan_bulan_ini) + parseFloat(t.total_tabungan_semua));
-        });
-        hitungTabunganTerkunci = hitungTabunganTerkunci + totalSemuaSavedBulanIni - totalSemuaWithdraw;
+        let hitungTabunganTerkunci = totalSemuaSaved - totalSemuaWithdraw;
+        if (hitungTabunganTerkunci < 0) hitungTabunganTerkunci = 0;
 
         // 3. LOGIKA AGREGASI RIWAYAT (PER BULAN)
         const grupRiwayat = dataPengeluaran.reduce((acc, curr) => {
@@ -834,7 +832,10 @@ const totalAmbilTabunganAktif = pengeluaranAktifBulanIni
   .filter(item => item.jenis === "ambil_tabungan")
   .reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
 
-const sisaUangAktif = keuangan.modal_awal + totalPemasukanAktif - totalPengeluaranAktif;
+const sisaUangAktif = (keuangan ? parseFloat(keuangan.modal_awal) : 0) + totalPemasukanAktif - totalPengeluaranAktif - totalSavedAktifBulanIni + totalAmbilTabunganAktif;
+
+let totalTabunganKeseluruhan = pengeluaran.filter(p => p.jenis === "tarik_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0) - pengeluaran.filter(p => p.jenis === "ambil_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
+if (totalTabunganKeseluruhan < 0) totalTabunganKeseluruhan = 0;
 
 // --- RENDERING VIEWS (STATE MACHINE) ---
 
@@ -979,8 +980,7 @@ if (appMode === "auth" && !session) {
             handleSetModal={handleSetModal}
             keuangan={keuangan}
             sisaUangAktif={sisaUangAktif}
-            totalAmbilTabunganAktif={totalAmbilTabunganAktif}
-            totalSavedAktifBulanIni={totalSavedAktifBulanIni}
+            totalTabunganKeseluruhan={totalTabunganKeseluruhan}
             kodeDompet={kodeDompet}
           />
 
