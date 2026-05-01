@@ -944,7 +944,7 @@ if (appMode === "auth" && !session) {
             <AnalyticsView
               setIsAnalyzing={setIsAnalyzing}
               totalPengeluaranAktif={totalPengeluaranAktif}
-              pengeluaran={pengeluaran}
+              pengeluaran={pengeluaranAktifBulanIni}
               getTrendData={getTrendData}
             />
           )}
