@@ -257,7 +257,7 @@ export default function App() {
   const [dailySummaries, setDailySummaries] = useState({}); // State baru untuk optimasi
 
   const [daftarDompet, setDaftarDompet] = useState([]);
-
+  const [semuaPengeluaran, setSemuaPengeluaran] = useState([]);
 
 
   // State agregasi untuk top cards
@@ -410,6 +410,7 @@ export default function App() {
         }, {});
 
         setDaftarDompet(listLengkap);
+        setSemuaPengeluaran(dataPengeluaran || []);
         setRiwayatData(Object.values(grupRiwayat).sort((a, b) => b.bulan.localeCompare(a.bulan)));
         setTotals({
           modalTerdaftar: hitungModalTerdaftar,
@@ -787,6 +788,32 @@ const handleCetak = () => {
   });
 };
 
+const handleCetakGlobal = () => {
+  const dataDisaring = semuaPengeluaran.filter(item => {
+    if (filterCetak === "harian") return item.tanggal === pilihanTgl;
+    if (filterCetak === "bulanan") return item.tanggal.startsWith(pilihanBln);
+    if (filterCetak === "tahunan") return item.tanggal.startsWith(pilihanThn);
+    return true;
+  });
+
+  const labelPeriode = filterCetak === "harian" ? pilihanTgl : (filterCetak === "bulanan" ? pilihanBln : (filterCetak === "tahunan" ? pilihanThn : "Semua"));
+
+  const tlnPemasukan = dataDisaring.filter(p => p.jenis === "pemasukan" || p.jenis === "ambil_tabungan").reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
+  const tlnPengeluaran = dataDisaring.filter(p => p.jenis === "pengeluaran").reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
+  const tlnSaved = dataDisaring.filter(p => p.jenis === "tarik_tabungan").reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
+  const tlnAmbil = dataDisaring.filter(p => p.jenis === "ambil_tabungan").reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
+
+  setPrintData({
+    dataDisaring,
+    labelPeriode,
+    tlnPemasukan,
+    tlnPengeluaran,
+    tlnSaved,
+    tlnAmbil,
+    namaDompet: "ARSIP KAS (SEMUA DOMPET)"
+  });
+};
+
 // LOGIKA AKTIF MENGGUNAKAN HUKUM SIKLUS WAKTU BARU
 const bulanSedangBerjalan = new Date().toISOString().slice(0, 7);
 const pengeluaranAktifBulanIni = pengeluaran.filter(item => isTrxActive(item.tanggal, bulanSedangBerjalan));
@@ -817,7 +844,7 @@ if (printData) {
         <button onClick={() => { setTimeout(() => window.print(), 300) }} style={{ padding: '12px 20px', background: colors.success, color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>🖨️ Lanjutkan Cetak PDF</button>
       </div>
       <div style={{ textAlign: 'center', marginBottom: '30px' }}>
-        <h2 style={{ color: '#000' }}>Laporan Arus Kas: {kodeDompet.toUpperCase()}</h2>
+        <h2 style={{ color: '#000' }}>Laporan Arus Kas: {printData.namaDompet || kodeDompet.toUpperCase()}</h2>
         <p>Periode laporan: <b>{printData.labelPeriode}</b><br />Dicetak pada: {new Date().toISOString().slice(0, 10)}</p>
       </div>
       <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #ddd' }}>
@@ -894,7 +921,22 @@ if (appMode === "auth" && !session) {
   let mainContent = null;
 
   if (isHistory) {
-    mainContent = <HistoryView setIsHistory={setIsHistory} riwayatData={riwayatData} totals={totals} toggleThemeButton={toggleThemeButton} appMode={appMode} />;
+    mainContent = <HistoryView 
+      setIsHistory={setIsHistory} 
+      riwayatData={riwayatData} 
+      totals={totals} 
+      toggleThemeButton={toggleThemeButton} 
+      appMode={appMode} 
+      filterCetak={filterCetak}
+      setFilterCetak={setFilterCetak}
+      pilihanTgl={pilihanTgl}
+      setPilihanTgl={setPilihanTgl}
+      pilihanBln={pilihanBln}
+      setPilihanBln={setPilihanBln}
+      pilihanThn={pilihanThn}
+      setPilihanThn={setPilihanThn}
+      handleCetakGlobal={handleCetakGlobal}
+    />;
   } else if (!isJoined) {
     mainContent = (
       <LobbyView

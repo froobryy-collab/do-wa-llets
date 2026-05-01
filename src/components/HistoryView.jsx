@@ -1,8 +1,13 @@
 import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { colors, styles } from '../constants/theme';
+import ReportFilters from './ReportFilters';
 
-const HistoryView = ({ setIsHistory, riwayatData, totals, toggleThemeButton, appMode }) => {
+const HistoryView = ({ 
+  setIsHistory, riwayatData, totals, toggleThemeButton, appMode,
+  filterCetak, setFilterCetak, pilihanTgl, setPilihanTgl, 
+  pilihanBln, setPilihanBln, pilihanThn, setPilihanThn, handleCetakGlobal
+}) => {
   return (
     <div style={styles.bodyWrapper}>
       <div style={styles.fullContainer} className="mobile-p-10">
@@ -17,6 +22,20 @@ const HistoryView = ({ setIsHistory, riwayatData, totals, toggleThemeButton, app
             <ArrowLeft size={18} style={{ marginRight: '8px' }} /> Kembali ke Lobby
           </button>
         </div>
+
+        {appMode !== "guest" && (
+          <ReportFilters
+            filterCetak={filterCetak}
+            setFilterCetak={setFilterCetak}
+            pilihanTgl={pilihanTgl}
+            setPilihanTgl={setPilihanTgl}
+            pilihanBln={pilihanBln}
+            setPilihanBln={setPilihanBln}
+            pilihanThn={pilihanThn}
+            setPilihanThn={setPilihanThn}
+            handlePrint={handleCetakGlobal}
+          />
+        )}
 
         <div style={styles.mainCard}>
           <div style={styles.tableResponsive}>
