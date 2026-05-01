@@ -1023,7 +1023,7 @@ if (appMode === "auth" && !session) {
                 <div style={styles.tableResponsive}>
                   {/* DAFTAR TRANSAKSI */}
                   <TransactionTable
-                    pengeluaran={pengeluaran}
+                    pengeluaran={pengeluaranAktifBulanIni}
                     dailySummaries={dailySummaries}
                     totalPemasukanAktif={totalPemasukanAktif}
                     totalPengeluaranAktif={totalPengeluaranAktif}
