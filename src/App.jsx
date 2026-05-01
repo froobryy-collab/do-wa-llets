@@ -334,8 +334,8 @@ export default function App() {
       // Logika Filter Hybrid
       const [resPengeluaran, resTabungan] = await Promise.all([
         (appMode === "member" && session) 
-          ? supabase.from("pengeluaran").select("kode_grup, nominal, jenis, tanggal").eq("user_id", session.user.id)
-          : supabase.from("pengeluaran").select("kode_grup, nominal, jenis, tanggal").is("user_id", null),
+          ? supabase.from("pengeluaran").select("kode_grup, nominal, jenis, tanggal, kategori, keterangan").eq("user_id", session.user.id)
+          : supabase.from("pengeluaran").select("kode_grup, nominal, jenis, tanggal, kategori, keterangan").is("user_id", null),
         (appMode === "member" && session)
           ? supabase.from("tabungan").select("*").eq("user_id", session.user.id)
           : supabase.from("tabungan").select("*").is("user_id", null)
