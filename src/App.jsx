@@ -313,7 +313,9 @@ export default function App() {
 
   // Format data untuk Grafik Tren (LineChart)
   const getTrendData = () => {
+    const bulanSekarang = new Date().toISOString().slice(0, 7);
     return Object.keys(dailySummaries)
+      .filter(date => isTrxActive(date, bulanSekarang))
       .sort((a, b) => a.localeCompare(b)) // Urutkan tanggal
       .map(date => ({
         name: date.split("-").slice(2).join("/") + "/" + date.split("-")[1], // Format DD/MM
