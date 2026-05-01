@@ -10,7 +10,8 @@ const ReportFilters = ({
   setPilihanBln,
   pilihanThn,
   setPilihanThn,
-  handlePrint
+  handlePrint,
+  isArchive = false
 }) => {
   return (
     <div style={{ ...styles.whiteCard, padding: '15px', marginBottom: '15px', display: 'flex', gap: '15px', alignItems: 'center', background: colors.bg, flexWrap: 'wrap' }}>
@@ -23,19 +24,19 @@ const ReportFilters = ({
       >
         <option value="semua">Semua</option>
         <option value="harian">Pilih Tanggal</option>
-        <option value="bulanan">Pilih Bulan</option>
-        <option value="tahunan">Pilih Tahun</option>
+        {isArchive && <option value="bulanan">Pilih Bulan</option>}
+        {isArchive && <option value="tahunan">Pilih Tahun</option>}
       </select>
 
       {filterCetak === "harian" && (
         <input type="date" value={pilihanTgl} onChange={(e) => setPilihanTgl(e.target.value)} style={{ ...styles.input, padding: '5px', fontSize: '0.85rem' }} />
       )}
 
-      {filterCetak === "bulanan" && (
+      {isArchive && filterCetak === "bulanan" && (
         <input type="month" value={pilihanBln} onChange={(e) => setPilihanBln(e.target.value)} style={{ ...styles.input, padding: '5px', fontSize: '0.85rem' }} />
       )}
 
-      {filterCetak === "tahunan" && (
+      {isArchive && filterCetak === "tahunan" && (
         <input type="number" min="2000" max="2100" value={pilihanThn} onChange={(e) => setPilihanThn(e.target.value)} style={{ ...styles.input, padding: '5px', fontSize: '0.85rem', width: '80px' }} />
       )}
 

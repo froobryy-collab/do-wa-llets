@@ -34,6 +34,7 @@ const HistoryView = ({
             pilihanThn={pilihanThn}
             setPilihanThn={setPilihanThn}
             handlePrint={handleCetakGlobal}
+            isArchive={true}
           />
         )}
 
