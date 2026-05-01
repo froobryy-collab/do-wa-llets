@@ -388,7 +388,7 @@ export default function App() {
         const totalSemuaSaved = dataPengeluaran.filter(p => p.jenis === "tarik_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
         const totalSemuaWithdraw = dataPengeluaran.filter(p => p.jenis === "ambil_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
         
-        let hitungTabunganTerkunci = totalSemuaSaved - totalSemuaWithdraw;
+        hitungTabunganTerkunci = totalSemuaSaved - totalSemuaWithdraw;
         if (hitungTabunganTerkunci < 0) hitungTabunganTerkunci = 0;
 
         // 3. LOGIKA AGREGASI RIWAYAT (PER BULAN)
