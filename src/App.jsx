@@ -832,7 +832,7 @@ const totalAmbilTabunganAktif = pengeluaranAktifBulanIni
   .filter(item => item.jenis === "ambil_tabungan")
   .reduce((acc, curr) => acc + parseFloat(curr.nominal), 0);
 
-const sisaUangAktif = (keuangan ? parseFloat(keuangan.modal_awal) : 0) + totalPemasukanAktif - totalPengeluaranAktif - totalSavedAktifBulanIni + totalAmbilTabunganAktif;
+const sisaUangAktif = (keuangan ? parseFloat(keuangan.modal_awal) : 0) + totalPemasukanAktif - totalPengeluaranAktif;
 
 let totalTabunganKeseluruhan = pengeluaran.filter(p => p.jenis === "tarik_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0) - pengeluaran.filter(p => p.jenis === "ambil_tabungan").reduce((acc, c) => acc + parseFloat(c.nominal), 0);
 if (totalTabunganKeseluruhan < 0) totalTabunganKeseluruhan = 0;
