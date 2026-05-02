@@ -2,38 +2,36 @@
 
 :root {
   /* MODE TERANG (Lampu Nyala) */
-  --bg: #F8FAFC;
+  --bg: #F5F7FB;
   --card: #FFFFFF;
-  --card-success: linear-gradient(to right, #FFFFFF 40%, #ECFDF5);
-  --card-danger: linear-gradient(to right, #FFFFFF 40%, #FEF2F2);
-  --title-gradient: linear-gradient(to bottom, #0F172A, #334155);
-  --text-main: #0F172A;
+  --card-success: linear-gradient(to right, #FFFFFF 40%, rgba(67, 160, 71, 0.05));
+  --card-danger: linear-gradient(to right, #FFFFFF 40%, rgba(229, 57, 53, 0.05));
+  --title-gradient: linear-gradient(to bottom, #2D3436, #636E72);
+  --text-main: #2D3436;
 
-  --text-muted: #64748B;
-  --border: #E2E8F0;
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  --text-muted: #636E72;
+  --border: #E1E4E8;
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --day-header-bg: #E2E8F0;
-  --day-header-text: #0F172A;
-  --th-bg: #1E293B;
-  /* Navy Gelap */
+  --day-header-bg: #E1E4E8;
+  --day-header-text: #2D3436;
+  --th-bg: #34495E;
   --th-text: #FFFFFF;
-  /* Teks Putih agar kontras */
 
-  --success: #10B981;
-  --danger: #EF4444;
-  --blue: #3B82F6;
-  --warning: #F59E0B;
-  --primary: #10B981;
-  --primary-gradient: linear-gradient(135deg, #10B981, #059669);
-  --shadow-card: 0 10px 20px -5px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  --success: #43A047;
+  --danger: #E53935;
+  --blue: #1E88E5;
+  --warning: #F39C12;
+  --primary: #43A047;
+  --primary-gradient: linear-gradient(135deg, #43A047, #2E7D32);
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.05);
   --input-bg: #ffffff;
-  --input-text: #0F172A;
-  --button-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+  --input-text: #2D3436;
+  --button-shadow: 0 4px 15px rgba(67, 160, 71, 0.2);
 }
 
 /* MODE GELAP (Lampu Mati) */
