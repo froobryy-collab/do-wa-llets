@@ -88,7 +88,7 @@ export default function LandingView({ onEnterApp }) {
           <a href="mailto:admin@do-wa-llets.com" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: colors.textMain, textDecoration: 'none', fontWeight: '600' }}>
             <Mail size={18} color={colors.blue} /> admin@app.com
           </a>
-          <a href="https://wa.me/628123456789" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: colors.textMain, textDecoration: 'none', fontWeight: '600' }}>
+          <a href="https://wa.me/6287819773736" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: colors.textMain, textDecoration: 'none', fontWeight: '600' }}>
             <MessageSquare size={18} color={colors.success} /> WhatsApp Kami
           </a>
         </div>
