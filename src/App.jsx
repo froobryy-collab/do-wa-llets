@@ -719,6 +719,8 @@ const handleSubmit = async (e) => {
       alert("Gagal Update: " + error.message);
     } else {
       handleCancelEdit();
+      fetchData();
+      fetchDaftarDompet();
     }
   } else {
     const payload = {
