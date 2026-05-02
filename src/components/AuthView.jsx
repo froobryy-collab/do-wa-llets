@@ -59,9 +59,12 @@ const AuthView = ({ setSession, onBack }) => {
         width: '100%',
         padding: '30px 20px',
         textAlign: 'center',
-        background: '#1E293B',
-        border: `1px solid rgba(255, 255, 255, 0.1)`,
-        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)'
+        background: 'rgba(30, 41, 59, 0.7)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        border: `1px solid rgba(255, 255, 255, 0.08)`,
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.3)',
+        borderRadius: '24px'
       }}>
         <div style={{ display: 'flex', justifyContent: 'flex-start', marginBottom: '10px' }}>
           <button onClick={onBack} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.4)', cursor: 'pointer', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '5px' }}>
@@ -87,7 +90,9 @@ const AuthView = ({ setSession, onBack }) => {
           ...styles.brankasTitle,
           fontSize: '2rem',
           marginBottom: '30px',
-          color: '#fff'
+          background: `linear-gradient(135deg, ${colors.success}, ${colors.blue})`,
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent'
         }}>Do-Wa-llets</h1>
 
         <form onSubmit={handleAuth} style={{ textAlign: 'left' }}>
@@ -102,7 +107,9 @@ const AuthView = ({ setSession, onBack }) => {
                 width: '100%',
                 padding: '16px',
                 borderRadius: '12px',
-                border: '1px solid #ccc',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                background: 'rgba(255, 255, 255, 0.05)',
+                color: 'rgba(255, 255, 255, 0.85)',
                 fontSize: '16px',
                 boxSizing: 'border-box',
                 WebkitUserSelect: 'text',
@@ -115,7 +122,7 @@ const AuthView = ({ setSession, onBack }) => {
           <div style={{ marginBottom: '30px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
               <label style={{ ...styles.label, marginBottom: 0, color: 'rgba(255, 255, 255, 0.7)' }}>Password</label>
-              <button type="button" onClick={handleForgot} style={{ background: 'none', border: 'none', color: colors.blue, fontSize: '0.75rem', cursor: 'pointer' }}>Lupa Akun?</button>
+              <button type="button" onClick={handleForgot} style={{ background: 'none', border: 'none', color: '#64B5F6', fontSize: '0.75rem', cursor: 'pointer' }}>Lupa Akun?</button>
             </div>
             <input
               type="password"
@@ -126,7 +133,9 @@ const AuthView = ({ setSession, onBack }) => {
                 width: '100%',
                 padding: '16px',
                 borderRadius: '12px',
-                border: '1px solid #ccc',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                background: 'rgba(255, 255, 255, 0.05)',
+                color: 'rgba(255, 255, 255, 0.85)',
                 fontSize: '16px',
                 boxSizing: 'border-box',
                 WebkitUserSelect: 'text',
@@ -156,6 +165,7 @@ const AuthView = ({ setSession, onBack }) => {
             disabled={loading}
             style={{
               ...styles.button,
+              background: colors.success,
               width: '100%',
               display: 'flex',
               alignItems: 'center',
@@ -176,7 +186,7 @@ const AuthView = ({ setSession, onBack }) => {
             style={{
               background: 'none',
               border: 'none',
-              color: colors.blue,
+              color: '#64B5F6',
               fontWeight: '700',
               marginLeft: '5px',
               cursor: 'pointer'
