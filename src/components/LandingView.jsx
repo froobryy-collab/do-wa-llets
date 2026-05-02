@@ -5,8 +5,8 @@ import { colors, styles } from '../constants/theme';
 export default function LandingView({ onEnterApp }) {
   const containerStyle = {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-    color: '#ffffff',
+    background: colors.bg,
+    color: colors.textMain,
     fontFamily: "'Inter', sans-serif",
     display: 'flex',
     flexDirection: 'column',
@@ -31,18 +31,18 @@ export default function LandingView({ onEnterApp }) {
 
   const featureCard = (icon, title, desc) => (
     <div style={{
-      backgroundColor: 'rgba(255, 255, 255, 0.05)',
+      background: colors.card,
       padding: '24px',
       borderRadius: '16px',
-      border: '1px solid rgba(255, 255, 255, 0.1)',
-      backdropFilter: 'blur(10px)',
+      border: `1px solid ${colors.border}`,
+      boxShadow: 'var(--shadow-card)',
       display: 'flex',
       flexDirection: 'column',
       gap: '12px'
     }}>
       <div style={{ color: colors.blue }}>{icon}</div>
       <h3 style={{ fontSize: '1.2rem', fontWeight: '600' }}>{title}</h3>
-      <p style={{ color: '#94a3b8', fontSize: '0.95rem', lineHeight: '1.5' }}>{desc}</p>
+      <p style={{ color: colors.textMuted, fontSize: '0.95rem', lineHeight: '1.5' }}>{desc}</p>
     </div>
   );
 
@@ -55,10 +55,10 @@ export default function LandingView({ onEnterApp }) {
           <ShieldCheck size={16} color={colors.blue} />
           <span style={{ fontSize: '0.85rem', fontWeight: '600', color: colors.blue }}>Aman & Terpercaya</span>
         </div>
-        <h1 style={{ fontSize: '3.5rem', fontWeight: '800', marginBottom: '16px', letterSpacing: '-0.02em', background: 'linear-gradient(to right, #fff, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+        <h1 style={{ fontSize: '3.5rem', fontWeight: '800', marginBottom: '16px', letterSpacing: '-0.02em', background: `linear-gradient(135deg, ${colors.success}, ${colors.blue})`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
           Do-Wa-llets
         </h1>
-        <p style={{ fontSize: '1.2rem', color: '#94a3b8', lineHeight: '1.6', marginBottom: '32px' }}>
+        <p style={{ fontSize: '1.2rem', color: colors.textMuted, lineHeight: '1.6', marginBottom: '32px' }}>
           Kelola keuangan bersama jadi lebih mudah, transparan, dan teratur. 
           Satu dompet untuk semua rencana masa depan Anda.
         </p>
@@ -66,7 +66,7 @@ export default function LandingView({ onEnterApp }) {
         <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
           <button 
             onClick={onEnterApp}
-            style={{ ...styles.btnPrimary, padding: '14px 40px', fontSize: '1.1rem', borderRadius: '50px', background: colors.blue }}
+            style={{ ...styles.button, padding: '14px 40px', fontSize: '1.1rem', borderRadius: '50px', background: colors.success }}
           >
             Mulai Sekarang (Web)
           </button>
@@ -82,17 +82,17 @@ export default function LandingView({ onEnterApp }) {
 
 
       {/* Footer / Contact */}
-      <div style={{ marginTop: 'auto', textAlign: 'center', padding: '40px 0', borderTop: '1px solid rgba(255, 255, 255, 0.1)', width: '100%', maxWidth: '800px' }}>
-        <p style={{ color: '#64748b', marginBottom: '16px' }}>Ada pertanyaan atau saran fitur?</p>
+      <div style={{ marginTop: 'auto', textAlign: 'center', padding: '40px 0', borderTop: `1px solid ${colors.border}`, width: '100%', maxWidth: '800px' }}>
+        <p style={{ color: colors.textMuted, marginBottom: '16px' }}>Ada pertanyaan atau saran fitur?</p>
         <div style={{ display: 'flex', gap: '24px', justifyContent: 'center' }}>
-          <a href="mailto:admin@do-wa-llets.com" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#fff', textDecoration: 'none' }}>
+          <a href="mailto:admin@do-wa-llets.com" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: colors.textMain, textDecoration: 'none', fontWeight: '600' }}>
             <Mail size={18} color={colors.blue} /> admin@app.com
           </a>
-          <a href="https://wa.me/628123456789" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#fff', textDecoration: 'none' }}>
+          <a href="https://wa.me/628123456789" target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: colors.textMain, textDecoration: 'none', fontWeight: '600' }}>
             <MessageSquare size={18} color={colors.success} /> WhatsApp Kami
           </a>
         </div>
-        <p style={{ marginTop: '30px', fontSize: '0.8rem', color: '#475569' }}>© 2026 Do-Wa-llets Project. Made with ❤️ for everyone.</p>
+        <p style={{ marginTop: '30px', fontSize: '0.8rem', color: colors.textMuted }}>© 2026 Do-Wa-llets Project. Made with ❤️ for everyone.</p>
       </div>
     </div>
   );
