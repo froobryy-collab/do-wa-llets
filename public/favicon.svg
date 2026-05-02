@@ -8,8 +8,8 @@
   <!-- Full bleed gradient background (no transparent padding) -->
   <rect width="64" height="64" fill="url(#grad1)" />
   
-  <!-- Dark premium wallet icon -->
-  <g transform="translate(14, 14) scale(1.5)" stroke="#0f172a" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <!-- White premium wallet icon -->
+  <g transform="translate(14, 14) scale(1.5)" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
     <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
     <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
     <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" />
