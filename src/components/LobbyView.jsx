@@ -1,4 +1,5 @@
 import React from 'react';
+import { Wallet } from 'lucide-react';
 import { colors, styles } from '../constants/theme';
 
 const LobbyView = ({ 
@@ -60,7 +61,28 @@ const LobbyView = ({
           </div>
 
           <div style={styles.brankasHeader}>
-            <h1 style={{...styles.brankasTitle, margin: '0 0 5px 0'}}>Do-Wa-llets</h1>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', marginBottom: '10px' }}>
+              <div style={{
+                background: `linear-gradient(135deg, ${colors.success}, ${colors.blue})`,
+                width: '45px',
+                height: '45px',
+                borderRadius: '12px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: 'white',
+                boxShadow: `0 8px 15px rgba(16, 185, 129, 0.2)`
+              }}>
+                <Wallet size={24} />
+              </div>
+              <h1 style={{
+                ...styles.brankasTitle, 
+                margin: 0,
+                background: `linear-gradient(135deg, ${colors.success}, ${colors.blue})`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent'
+              }}>Do-Wa-llets</h1>
+            </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
               <span style={styles.globalRingkasan}>Money for Future</span>
               {appMode === 'guest' && (
