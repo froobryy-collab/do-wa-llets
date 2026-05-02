@@ -10,7 +10,7 @@ const WelcomeView = ({ onChooseGuest, onChooseLogin }) => {
       minHeight: '100vh',
       padding: '20px',
       paddingTop: '10vh',
-      background: 'radial-gradient(circle at top right, #1e293b, #0f172a)'
+      backgroundColor: colors.bg
     }}>
       <div style={{
         ...styles.whiteCard,
@@ -18,11 +18,7 @@ const WelcomeView = ({ onChooseGuest, onChooseLogin }) => {
         margin: '0 auto',
         width: '100%',
         padding: '50px 40px',
-        textAlign: 'center',
-        background: 'rgba(30, 41, 59, 0.7)',
-        backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+        textAlign: 'center'
       }}>
         <div style={{
           background: `linear-gradient(135deg, ${colors.success}, ${colors.blue})`,
@@ -46,13 +42,15 @@ const WelcomeView = ({ onChooseGuest, onChooseLogin }) => {
           lineHeight: '1.1',
           fontSize: '2.5rem',
           marginBottom: '10px',
-          color: '#ffffff'
+          background: `linear-gradient(135deg, ${colors.success}, ${colors.blue})`,
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent'
         }}>Do-Wa-llets</h1>
         <p style={{
           ...styles.globalRingkasan,
           fontSize: '0.9rem',
           marginBottom: '40px',
-          color: 'rgba(255, 255, 255, 0.6)'
+          color: colors.textMuted
         }}>Kelola Keuangan dengan Gaya & Privasi</p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -61,14 +59,14 @@ const WelcomeView = ({ onChooseGuest, onChooseLogin }) => {
             onClick={onChooseLogin}
             style={{
               ...styles.button,
+              background: colors.success,
               padding: '18px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '12px',
               fontSize: '1rem',
-              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-              background: `linear-gradient(135deg, ${colors.blue}, #2563eb)`
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
             }}
             onMouseOver={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
             onMouseOut={(e) => e.currentTarget.style.transform = 'translateY(0)'}
@@ -84,9 +82,6 @@ const WelcomeView = ({ onChooseGuest, onChooseLogin }) => {
             style={{
               ...styles.btnSecondary,
               padding: '18px',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              color: '#fff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -94,8 +89,8 @@ const WelcomeView = ({ onChooseGuest, onChooseLogin }) => {
               fontSize: '1rem',
               transition: 'all 0.3s'
             }}
-            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
-            onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'}
+            onMouseOver={(e) => e.currentTarget.style.borderColor = colors.blue}
+            onMouseOut={(e) => e.currentTarget.style.borderColor = colors.border}
           >
             <User size={20} style={{ color: colors.success }} />
             Gunakan sebagai Guest
@@ -106,14 +101,15 @@ const WelcomeView = ({ onChooseGuest, onChooseLogin }) => {
           marginTop: '40px',
           padding: '15px',
           borderRadius: '12px',
-          background: 'rgba(16, 185, 129, 0.05)',
+          background: 'var(--input-bg, #ffffff)',
+          border: `1px solid ${colors.border}`,
           display: 'flex',
           alignItems: 'center',
           gap: '12px',
           textAlign: 'left'
         }}>
           <ShieldCheck size={20} style={{ color: colors.success, flexShrink: 0 }} />
-          <p style={{ margin: 0, fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.5)', lineHeight: '1.4' }}>
+          <p style={{ margin: 0, fontSize: '0.75rem', color: colors.textMuted, lineHeight: '1.4' }}>
             <strong>Mode Member:</strong> Data tersimpan privat & aman.<br/>
             <strong>Mode Guest:</strong> Data tersimpan umum (tanpa login).
           </p>
