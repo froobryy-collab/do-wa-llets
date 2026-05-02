@@ -32,9 +32,15 @@ const WalletDashboard = ({
         <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
           <input
             type="number"
+            min="0"
             placeholder="Nominal"
             value={inputModal}
-            onChange={(e) => setInputModal(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (val === "" || Number(val) >= 0) {
+                setInputModal(val);
+              }
+            }}
             style={{ ...styles.input, padding: '8px', flex: 1, fontSize: '0.9rem' }}
           />
           <button

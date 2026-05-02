@@ -70,9 +70,15 @@ const TransactionForm = ({
           <label style={styles.label}>Nominal (Rp)</label>
           <input
             type="number"
+            min="0"
             placeholder="0"
             value={form.nominal}
-            onChange={(e) => setForm({ ...form, nominal: e.target.value })}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (val === "" || Number(val) >= 0) {
+                setForm({ ...form, nominal: val });
+              }
+            }}
             style={styles.input}
           />
         </div>

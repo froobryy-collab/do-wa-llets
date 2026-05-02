@@ -488,7 +488,8 @@ export default function App() {
       const pesanPrompt = `📅 BULAN BARU (${bulanSekarang}) TELAH TIBA!\n\nData bulan lalu telah sukses dimasukkan ke Arsip.\n\nINFO: Sisa uang Anda di penutupan periode kemarin adalah:\n👉 Rp ${sisaUangBulanLalu.toLocaleString("id-ID")}\n\nSilakan ketik nominal setoran Modal Awal Anda untuk memulai pencatatan bulan ini:`;
       const inputNominal = window.prompt(pesanPrompt, sisaUangBulanLalu);
 
-      const newModal = (inputNominal !== null && !isNaN(inputNominal) && inputNominal.trim() !== "") ? parseFloat(inputNominal) : sisaUangBulanLalu;
+      let newModal = (inputNominal !== null && !isNaN(inputNominal) && inputNominal.trim() !== "") ? parseFloat(inputNominal) : sisaUangBulanLalu;
+      if (newModal < 0) newModal = 0;
       const totalTabunganBaru = parseFloat(dataKeuangan.total_tabungan_semua) + totalYangDiSaved;
 
       await supabase
@@ -508,7 +509,7 @@ export default function App() {
   };
 
 const handleSetModal = async () => {
-  if (!inputModal || isNaN(inputModal)) return alert("Masukkan angka nominal modal yang valid!");
+  if (!inputModal || isNaN(inputModal) || parseFloat(inputModal) < 0) return alert("Masukkan angka nominal modal yang valid dan tidak negatif!");
   const bulanSekarang = new Date().toISOString().slice(0, 7);
   setLoading(true);
 
@@ -691,6 +692,7 @@ const handleDeleteWallet = async () => {
 const handleSubmit = async (e) => {
   e.preventDefault();
   if (!form.keterangan || !form.nominal || !form.kategori) return alert("Isi semua data termasuk kategori dulu ya!");
+  if (parseFloat(form.nominal) < 0) return alert("Nominal tidak boleh negatif!");
   setLoading(true);
 
   if (isEditing) {
