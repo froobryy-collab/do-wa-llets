@@ -47,7 +47,7 @@ const GuideView = ({ onClose }) => {
   ];
 
   return (
-    <div style={{
+    <div className="guide-modal-wrapper" style={{
       position: 'fixed',
       top: 0,
       left: 0,
@@ -61,7 +61,7 @@ const GuideView = ({ onClose }) => {
       alignItems: 'center',
       padding: '20px'
     }}>
-      <div style={{
+      <div className="guide-container" style={{
         ...styles.whiteCard,
         maxWidth: '800px',
         width: '100%',
@@ -93,7 +93,7 @@ const GuideView = ({ onClose }) => {
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '25px' }}>
           {guideSteps.map((step, index) => (
-            <div key={index} style={{ 
+            <div key={index} className="guide-card-content" style={{ 
               display: 'flex', 
               gap: '24px', 
               padding: '28px', 
@@ -103,7 +103,7 @@ const GuideView = ({ onClose }) => {
               boxShadow: 'var(--shadow)',
               transition: 'transform 0.3s ease'
             }}>
-              <div style={{ 
+              <div className="guide-icon-box" style={{ 
                 minWidth: '56px', 
                 height: '56px', 
                 borderRadius: '16px', 
@@ -115,7 +115,7 @@ const GuideView = ({ onClose }) => {
                 {step.icon}
               </div>
               <div style={{ flex: 1 }}>
-                <h3 style={{ 
+                <h3 className="guide-title" style={{ 
                   margin: '0 0 12px 0', 
                   fontSize: '1.3rem', 
                   fontWeight: '800', 
@@ -132,7 +132,7 @@ const GuideView = ({ onClose }) => {
                 {/* Background Text Points */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {step.details.map((detail, idx) => (
-                    <div key={idx} style={{ 
+                    <div key={idx} className="guide-detail-box" style={{ 
                       display: 'flex', 
                       alignItems: 'flex-start', 
                       gap: '12px', 
@@ -175,6 +175,31 @@ const GuideView = ({ onClose }) => {
         @keyframes fadeInSlide {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 600px) {
+          .guide-modal-wrapper {
+            padding: 10px !important;
+          }
+          .guide-container {
+            padding: 25px 20px !important;
+          }
+          .guide-card-content {
+            padding: 20px !important;
+            flex-direction: column !important;
+            gap: 12px !important;
+          }
+          .guide-icon-box {
+            min-width: 45px !important;
+            width: 45px !important;
+            height: 45px !important;
+          }
+          .guide-title {
+            font-size: 1.15rem !important;
+          }
+          .guide-detail-box {
+            padding: 10px 12px !important;
+            font-size: 0.85rem !important;
+          }
         }
       `}</style>
     </div>
